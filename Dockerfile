@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # Set environment variables to ensure python output is logged and bytecode isn't generated
 ENV PYTHONDONTWRITEBYTECODE=1

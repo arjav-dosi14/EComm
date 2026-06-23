@@ -1,0 +1,467 @@
+{% extends 'base.html' %}
+{% block title %}
+Products
+{% endblock %}
+{% block extra_css %}
+<style>
+        :root {
+            --primary: #0f172a;
+            --primary-hover: #1e293b;
+            --surface: #f8fafc;
+            --surface-container: #ffffff;
+            --on-surface: #0f172a;
+            --on-surface-variant: #475569;
+            --outline: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.05);
+            --radius: 8px;
+            --gutter: 24px;
+        }
+
+        /* Main Content */
+        .main-wrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px var(--gutter);
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            font-size: 14px;
+            color: var(--on-surface-variant);
+            margin-bottom: 16px;
+        }
+
+        .breadcrumb span {
+            margin: 0 8px;
+            opacity: 0.5;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .page-header span {
+            color: var(--on-surface-variant);
+            font-size: 16px;
+        }
+
+        /* Layout Grid */
+        .plp-grid {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 32px;
+        }
+
+        /* Sidebar Filters */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .filter-section {
+            background: var(--surface-container);
+            border: 1px solid var(--outline);
+            padding: 20px;
+            border-radius: var(--radius);
+        }
+
+        .filter-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-group h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-apply {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-apply:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Right Content Area */
+        .sort-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background: var(--surface-container);
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--outline);
+        }
+
+        .sort-select {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--outline);
+            font-size: 14px;
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 24px;
+        }
+
+        .product-card {
+            background: var(--surface-container);
+            border-radius: var(--radius);
+            border: 1px solid var(--outline);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: transparent;
+        }
+
+        .image-container {
+            width: 100%;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+            background: #f1f5f9;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.1);
+        }
+
+        .product-info {
+            padding: 16px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--on-surface);
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 12px;
+            color: #fbbf24;
+            font-size: 12px;
+        }
+
+        .rating-count {
+            color: var(--on-surface-variant);
+            margin-left: 4px;
+        }
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-top: auto;
+            margin-bottom: 16px;
+        }
+
+        .current-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--on-surface);
+        }
+
+        .old-price {
+            font-size: 14px;
+            color: var(--on-surface-variant);
+            text-decoration: line-through;
+        }
+
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-card {
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-view {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-view:hover {
+            background: rgba(0, 74, 198, 0.05);
+        }
+
+        .btn-add {
+            background: var(--primary);
+            color: white;
+            border: 1px solid var(--primary);
+        }
+
+        .btn-add:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Recently Viewed */
+        .recently-viewed {
+            margin-top: 64px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .horizontal-scroll {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .recent-card {
+            background: white;
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--outline);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .recent-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            background: #f1f5f9;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .plp-grid {
+                grid-template-columns: 220px 1fr;
+            }
+            .horizontal-scroll {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .plp-grid {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+{% endblock %}
+{% block content %}
+<main class="main-wrapper">
+<div class="breadcrumb">
+            <a href="{% url 'home' %}" class="hover:text-primary">Home</a> <span>/</span> <a href="{% url 'products' %}" class="hover:text-primary">Products</a>
+            {% if query %}
+            <span>/</span> Search: "{{ query }}"
+            {% endif %}
+        </div>
+<div class="page-header">
+<h1>{% if current_category %}{{ current_category.name }}{% else %}All Products{% endif %}</h1>
+<span>Showing {{ total_count }} products</span>
+</div>
+<div class="plp-grid">
+<aside class="sidebar">
+<form method="GET" action="{% url 'products' %}" id="filter-form">
+    {% if query %}
+        <input type="hidden" name="q" value="{{ query }}">
+    {% endif %}
+    {% if sort_by %}
+        <input type="hidden" name="sort" value="{{ sort_by }}">
+    {% endif %}
+    <div class="filter-section">
+        <div class="filter-title">
+            <span>Filters</span>
+            <a href="{% url 'products' %}" style="font-size: 12px; color: var(--primary); text-decoration: none;">Reset All</a>
+        </div>
+        <div class="filter-group">
+            <h4>Categories</h4>
+            {% for cat in categories_all %}
+            <label class="filter-item">
+                <input type="checkbox" name="category" value="{{ cat.slug }}" {% if cat.slug in selected_categories %}checked{% endif %}/> {{ cat.name }}
+            </label>
+            {% endfor %}
+        </div>
+        <div class="filter-group">
+            <h4>Price Range</h4>
+            <label class="filter-item"><input name="price" type="radio" value="under_500" {% if price_filter == 'under_500' %}checked{% endif %}/> Under ₹500</label>
+            <label class="filter-item"><input name="price" type="radio" value="500_2000" {% if price_filter == '500_2000' %}checked{% endif %}/> ₹500 - ₹2000</label>
+            <label class="filter-item"><input name="price" type="radio" value="2000_5000" {% if price_filter == '2000_5000' %}checked{% endif %}/> ₹2000 - ₹5000</label>
+            <label class="filter-item"><input name="price" type="radio" value="above_5000" {% if price_filter == 'above_5000' %}checked{% endif %}/> Above ₹5000</label>
+        </div>
+        <button class="btn-apply" type="submit">Apply Filters</button>
+    </div>
+</form>
+</aside>
+<section class="content">
+<div class="sort-bar">
+<div style="font-size: 14px; font-weight: 500;">{{ total_count }} Products Found</div>
+<div>
+<span style="font-size: 14px; margin-right: 8px;">Sort By:</span>
+<select class="sort-select" onchange="applySort(this.value)">
+    <option value="" {% if sort_by == '' %}selected{% endif %}>Popularity</option>
+    <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+    <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
+    <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Name: A-Z</option>
+</select>
+</div>
+</div>
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+        <div class="image-container">
+            <a href="{% url 'product_details' product.slug %}">
+                <img class="product-image" src="{{ product.image_url }}" alt="{{ product.name }}"/>
+            </a>
+        </div>
+        <div class="product-info">
+            <h3 class="product-name"><a href="{% url 'product_details' product.slug %}" class="hover:text-primary transition-colors">{{ product.name }}</a></h3>
+            <div class="rating">
+                <span class="material-symbols-outlined" style="font-size: 14px; font-variation-settings: 'FILL' 1;">star</span>
+                <span class="rating-count">{{ product.rating }} ({{ product.rating_count }})</span>
+            </div>
+            <div class="price-row">
+                <span class="current-price">₹{{ product.price }}</span>
+                {% if product.old_price %}
+                <span class="old-price">₹{{ product.old_price }}</span>
+                {% endif %}
+            </div>
+            <div class="card-actions">
+                <a class="btn-card btn-view" href="{% url 'product_details' product.slug %}">Details</a>
+                <a class="btn-card btn-add" href="{% url 'add_to_cart' product.id %}">Add to Cart</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center col-span-full py-xl text-on-surface-variant font-body-md">
+        No products found matching your search.
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if products.has_other_pages %}
+<div class="pagination flex justify-center items-center gap-2 mt-8 py-4">
+    {% if products.has_previous %}
+        <a href="?{% if page_query_params %}{{ page_query_params }}&{% endif %}page={{ products.previous_page_number }}" class="px-4 py-2 border border-outline rounded-lg hover:bg-surface-container-low transition-colors text-on-surface font-semibold text-sm">Prev</a>
+    {% else %}
+        <span class="px-4 py-2 border border-outline rounded-lg opacity-40 cursor-not-allowed font-semibold text-sm">Prev</span>
+    {% endif %}
+
+    {% for i in products.paginator.page_range %}
+        {% if products.number == i %}
+            <span class="px-4 py-2 bg-[#0f172a] text-white border border-[#0f172a] rounded-lg font-bold text-sm">{{ i }}</span>
+        {% else %}
+            <a href="?{% if page_query_params %}{{ page_query_params }}&{% endif %}page={{ i }}" class="px-4 py-2 border border-outline rounded-lg hover:bg-surface-container-low transition-colors text-on-surface text-sm">{{ i }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if products.has_next %}
+        <a href="?{% if page_query_params %}{{ page_query_params }}&{% endif %}page={{ products.next_page_number }}" class="px-4 py-2 border border-outline rounded-lg hover:bg-surface-container-low transition-colors text-on-surface font-semibold text-sm">Next</a>
+    {% else %}
+        <span class="px-4 py-2 border border-outline rounded-lg opacity-40 cursor-not-allowed font-semibold text-sm">Next</span>
+    {% endif %}
+</div>
+{% endif %}
+
+</section>
+</div>
+
+{% if recently_viewed %}
+<section class="recently-viewed">
+<h2 class="section-title">Recently Viewed</h2>
+<div class="horizontal-scroll">
+    {% for prod in recently_viewed %}
+    <div class="recent-card cursor-pointer" onclick="window.location.href='{% url 'product_details' prod.slug %}'">
+        <div class="recent-thumb" style="background-image: url('{{ prod.image_url }}'); background-size: cover;"></div>
+        <div>
+            <div style="font-size: 14px; font-weight: 600;" class="truncate w-40">{{ prod.name }}</div>
+            <div style="font-size: 13px; color: var(--primary);">₹{{ prod.price }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</section>
+{% endif %}
+</main>
+
+<script>
+    function applySort(val) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sort', val);
+        window.location.search = urlParams.toString();
+    }
+</script>
+{% endblock %}

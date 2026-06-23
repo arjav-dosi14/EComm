@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% block title %}Order History | ShopSphere{% endblock %}
+
+{% block extra_css %}
+<style>
+    .status-pill {
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid currentColor;
+    }
+    .card-shadow {
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="max-w-container-max mx-auto px-margin-desktop py-xl">
+    <!-- Breadcrumbs -->
+    <nav class="mb-lg flex items-center gap-xs text-on-surface-variant font-label-md">
+        <a class="hover:text-primary" href="{% url 'home' %}">Home</a>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+        <a class="hover:text-primary" href="{% url 'profile' %}">My Profile</a>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+        <span class="text-on-surface">Order History</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="mb-xl">
+        <h2 class="font-headline-md text-headline-md text-on-surface text-3xl font-bold">My Orders</h2>
+        <p class="font-body-md text-on-surface-variant mt-1">Track and review all your previous purchases.</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter mb-xl">
+        <div class="bg-surface border border-outline-variant p-lg rounded-xl card-shadow flex flex-col items-center">
+            <span class="font-label-md text-on-surface-variant uppercase">Total Orders</span>
+            <span class="font-display-lg text-display-lg text-primary text-3xl font-extrabold mt-2">{{ total_orders }}</span>
+        </div>
+        <div class="bg-surface border border-outline-variant p-lg rounded-xl card-shadow flex flex-col items-center">
+            <span class="font-label-md text-on-surface-variant uppercase">Delivered</span>
+            <span class="font-display-lg text-display-lg text-[#22c55e] text-3xl font-extrabold mt-2">{{ delivered }}</span>
+        </div>
+        <div class="bg-surface border border-outline-variant p-lg rounded-xl card-shadow flex flex-col items-center">
+            <span class="font-label-md text-on-surface-variant uppercase">Processing</span>
+            <span class="font-display-lg text-display-lg text-[#f59e0b] text-3xl font-extrabold mt-2">{{ processing }}</span>
+        </div>
+        <div class="bg-surface border border-outline-variant p-lg rounded-xl card-shadow flex flex-col items-center">
+            <span class="font-label-md text-on-surface-variant uppercase">Cancelled</span>
+            <span class="font-display-lg text-display-lg text-[#ef4444] text-3xl font-extrabold mt-2">{{ cancelled }}</span>
+        </div>
+    </div>
+
+    {% if orders %}
+    <!-- Toolbar -->
+    <div class="bg-surface border border-outline-variant p-md rounded-xl card-shadow flex flex-col md:flex-row justify-between items-center gap-md mb-xl">
+        <div class="relative w-full md:w-1/3">
+            <input id="order-search" class="w-full border border-outline-variant rounded-lg px-xl py-sm pl-10 focus:border-primary focus:ring-1 focus:ring-primary/10" placeholder="Search by Order ID..." type="text"/>
+            <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+        </div>
+        <div class="flex items-center gap-md w-full md:w-auto">
+            <select id="status-filter" class="border border-outline-variant rounded-lg px-md py-sm bg-surface w-full md:w-auto">
+                <option value="all">All Statuses</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Processing">Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+            <select id="order-sort" class="border border-outline-variant rounded-lg px-md py-sm bg-surface w-full md:w-auto">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="price_desc">Highest Price</option>
+                <option value="price_asc">Lowest Price</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Order List -->
+    <div id="order-list-container" class="flex flex-col gap-lg mb-2xl">
+        {% for order in orders %}
+        <div class="order-card bg-surface border border-outline-variant rounded-xl card-shadow overflow-hidden" 
+             data-order-id="{{ order.id }}" 
+             data-status="{{ order.status }}" 
+             data-price="{{ order.total_amount }}" 
+             data-timestamp="{{ order.created_at|date:'U' }}">
+            
+            <div class="bg-surface-container-low px-lg py-md border-b border-outline-variant flex flex-wrap justify-between items-center gap-md">
+                <div class="flex items-center gap-xl">
+                    <div>
+                        <p class="font-label-sm text-on-surface-variant text-xs">ORDER PLACED</p>
+                        <p class="font-body-md font-semibold">{{ order.created_at|date:"F d, Y" }}</p>
+                    </div>
+                    <div>
+                        <p class="font-label-sm text-on-surface-variant text-xs">TOTAL</p>
+                        <p class="font-body-md font-semibold">₹{{ order.total_amount }}</p>
+                    </div>
+                    <div>
+                        <p class="font-label-sm text-on-surface-variant text-xs">SHIP TO</p>
+                        <p class="font-body-md font-semibold">{{ order.full_name }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-label-sm text-on-surface-variant text-xs">ORDER # {{ order.id }}</p>
+                    {% if order.status == 'Delivered' %}
+                    <span class="status-pill text-[#22c55e] bg-[#22c55e]/10">Delivered</span>
+                    {% elif order.status == 'Processing' %}
+                    <span class="status-pill text-[#f59e0b] bg-[#f59e0b]/10">Processing</span>
+                    {% elif order.status == 'Shipped' %}
+                    <span class="status-pill text-[#3b82f6] bg-[#3b82f6]/10">Shipped</span>
+                    {% else %}
+                    <span class="status-pill text-[#ef4444] bg-[#ef4444]/10">Cancelled</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="p-lg flex flex-col gap-lg">
+                {% for item in order.items.all %}
+                <div class="flex flex-col md:flex-row gap-xl items-start {% if not forloop.last %}pb-6 border-b border-outline-variant/30{% endif %}">
+                    <img alt="{% if item.product %}{{ item.product.name }}{% else %}Deleted Product{% endif %}" class="w-24 h-24 rounded-lg object-cover" src="{% if item.product and item.product.image %}{{ item.product.image.url }}{% elif item.product and item.product.image_url %}{{ item.product.image_url }}{% else %}https://placehold.co/400{% endif %}"/>
+                    <div class="flex-grow">
+                        <h4 class="font-headline-sm text-on-surface mb-xs text-lg font-semibold hover:text-primary transition-colors">
+                            {% if item.product and item.product.slug %}
+                                <a href="{% url 'product_details' item.product.slug %}">{{ item.product.name }}</a>
+                            {% else %}
+                                <span>Deleted Product</span>
+                            {% endif %}
+                        </h4>
+                        <p class="text-on-surface-variant mb-xs">Qty: {{ item.quantity }} | Price: ₹{{ item.price }}</p>
+                        <p class="font-label-md text-primary bg-primary-fixed/30 inline-block px-xs rounded text-xs px-2 py-0.5">Payment: {{ order.payment_method }}</p>
+                        <p class="text-on-surface-variant text-sm mt-md"><span class="material-symbols-outlined text-[16px] align-middle">location_on</span> {{ order.address }}, {{ order.city }}, {{ order.state }} - {{ order.zip_code }}, {{ order.country }}</p>
+                    </div>
+                    <div class="flex flex-col gap-sm w-full md:w-auto">
+                        {% if item.product %}
+                        <a href="{% url 'add_to_cart' item.product.id %}" class="bg-primary text-on-primary font-label-md py-sm px-xl rounded-lg hover:brightness-90 text-center transition-all active:scale-95">Buy Again</a>
+                        {% endif %}
+                        {% if item.product and item.product.slug %}
+                        <a href="{% url 'product_details' item.product.slug %}" class="border border-outline text-on-surface font-label-md py-sm px-xl rounded-lg hover:bg-surface-container-high text-center transition-all">View Details</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Client-side Search / Empty State for filtered views -->
+    <section id="filtered-empty-state" class="hidden py-2xl text-center flex flex-col items-center">
+        <span class="material-symbols-outlined text-[80px] text-on-surface-variant mb-lg opacity-20" style="font-variation-settings: 'wght' 200">shopping_basket</span>
+        <h3 class="font-headline-md text-headline-md text-xl font-semibold">No Orders Found</h3>
+        <p class="text-on-surface-variant mt-sm max-w-md mx-auto">We couldn't find any orders matching your filters.</p>
+    </section>
+
+    {% if not orders %}
+    <!-- Empty State -->
+    <section class="py-2xl text-center flex flex-col items-center">
+        <span class="material-symbols-outlined text-[80px] text-on-surface-variant mb-lg opacity-20" style="font-variation-settings: 'wght' 200">shopping_basket</span>
+        <h3 class="font-headline-md text-headline-md text-xl font-semibold">No Orders Yet</h3>
+        <p class="text-on-surface-variant mt-sm max-w-md mx-auto">Looks like you haven't placed any orders yet. Explore our latest collections and start your shopping journey!</p>
+        <a href="{% url 'products' %}" class="mt-xl bg-primary text-on-primary font-label-md py-md px-2xl rounded-lg hover:brightness-90 transition-all">Start Shopping</a>
+    </section>
+    {% endif %}
+
+    <!-- Recommended Products Section -->
+    <section class="mb-2xl mt-12 border-t border-outline-variant pt-12">
+        <h3 class="font-headline-sm text-headline-sm text-2xl font-bold mb-lg">Recommended Products</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter mt-6">
+            {% for prod in buy_again %}
+            <div class="bg-surface border border-outline-variant p-md rounded-xl card-shadow group flex flex-col justify-between">
+                <div>
+                    <div class="aspect-square rounded-lg overflow-hidden mb-md bg-white">
+                        <img alt="{{ prod.name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300" src="{% if prod.image %}{{ prod.image.url }}{% elif prod.image_url %}{{ prod.image_url }}{% else %}https://placehold.co/400{% endif %}"/>
+                    </div>
+                    <h5 class="font-label-md text-on-surface font-semibold truncate hover:text-primary">
+                        {% if prod.slug %}
+                        <a href="{% url 'product_details' prod.slug %}">{{ prod.name }}</a>
+                        {% else %}
+                        <span>{{ prod.name }}</span>
+                        {% endif %}
+                    </h5>
+                    <p class="font-body-md font-semibold text-primary mt-1">₹{{ prod.price }}</p>
+                </div>
+                <a href="{% url 'add_to_cart' prod.id %}" class="block text-center w-full mt-md bg-primary text-white font-label-md py-xs rounded-lg hover:brightness-90 transition-all">Add to Cart</a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Support Card -->
+    <section class="bg-primary-container text-white p-xl rounded-2xl flex flex-col md:flex-row justify-between items-center gap-xl mb-2xl">
+        <div class="flex items-center gap-lg">
+            <div class="bg-white/20 p-md rounded-full">
+                <span class="material-symbols-outlined text-[32px] text-white">support_agent</span>
+            </div>
+            <div>
+                <h4 class="font-headline-sm text-xl font-bold">Need Help With An Order?</h4>
+                <p class="opacity-90 text-sm">Our support team is available 24/7 to assist you with tracking, refunds, or technical issues.</p>
+            </div>
+        </div>
+        <a href="{% url 'contact' %}" class="bg-white text-primary font-label-md py-md px-2xl rounded-lg whitespace-nowrap hover:bg-white/90 transition-all active:scale-95 shadow-lg block text-center font-bold">Contact Support</a>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById('order-search');
+        const statusFilter = document.getElementById('status-filter');
+        const orderSort = document.getElementById('order-sort');
+        const orderCardsContainer = document.getElementById('order-list-container');
+        const filteredEmptyState = document.getElementById('filtered-empty-state');
+        
+        if (!orderCardsContainer) return;
+        
+        const orderCards = Array.from(orderCardsContainer.getElementsByClassName('order-card'));
+
+        function filterAndSortOrders() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            const statusVal = statusFilter.value;
+            const sortVal = orderSort.value;
+
+            let visibleCount = 0;
+
+            // Filter
+            orderCards.forEach(card => {
+                const orderId = card.getAttribute('data-order-id').toLowerCase();
+                const orderStatus = card.getAttribute('data-status');
+                
+                const matchesSearch = orderId.includes(searchTerm);
+                const matchesStatus = (statusVal === 'all' || orderStatus === statusVal);
+
+                if (matchesSearch && matchesStatus) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Sort visible ones
+            const sortedCards = orderCards.slice().sort((a, b) => {
+                if (sortVal === 'newest') {
+                    return parseInt(b.getAttribute('data-timestamp')) - parseInt(a.getAttribute('data-timestamp'));
+                } else if (sortVal === 'oldest') {
+                    return parseInt(a.getAttribute('data-timestamp')) - parseInt(b.getAttribute('data-timestamp'));
+                } else if (sortVal === 'price_desc') {
+                    return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
+                } else if (sortVal === 'price_asc') {
+                    return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
+                }
+                return 0;
+            });
+
+            // Re-append sorted elements
+            sortedCards.forEach(card => {
+                orderCardsContainer.appendChild(card);
+            });
+
+            // Show empty state if no matches
+            if (visibleCount === 0) {
+                filteredEmptyState.classList.remove('hidden');
+            } else {
+                filteredEmptyState.classList.add('hidden');
+            }
+        }
+
+        searchInput.addEventListener('input', filterAndSortOrders);
+        statusFilter.addEventListener('change', filterAndSortOrders);
+        orderSort.addEventListener('change', filterAndSortOrders);
+    });
+</script>
+{% endblock %}

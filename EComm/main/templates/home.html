@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% block title %}
+Home
+{% endblock %}
+{% block content %}
+<main>
+<!-- Hero Section -->
+<section class="mesh-gradient py-xxl overflow-hidden">
+<div class="max-w-container-max mx-auto px-gutter grid grid-cols-1 md:grid-cols-2 items-center gap-xl">
+<div class="space-y-lg">
+<span class="inline-block px-4 py-1 rounded-full bg-primary-container/10 text-primary font-label-md text-label-md">Summer Collection 2026</span>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface">Discover Amazing Products</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg leading-relaxed">
+                        Elevate your lifestyle with our curated selection of premium electronics, fashion, and accessories. Quality meets contemporary design in every piece.
+                    </p>
+<div class="flex flex-wrap gap-md pt-md">
+<button class="bg-primary text-on-primary px-lg py-3 rounded-lg font-label-md text-label-md hover:scale-[1.01] active:scale-95 transition-all font-bold" onclick="window.location.href='{% url 'products' %}'">Shop Now</button>
+<button class="border border-outline text-on-surface px-lg py-3 rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-all" onclick="window.location.href='{% url 'categories' %}'">Explore Categories</button>
+</div>
+</div>
+<div class="relative flex justify-center items-center">
+<img alt="ShopSphere Hero Showcase" class="w-full h-auto rounded-xl shadow-xxl object-cover aspect-square" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDb915aWUIdGNdtbOkXth2-Dy9YuJpyBVaxXCKeZVEog7a5OhRPAL1_4uA5fqpBxY0OvnJAbX-uHc-fx0JpX6ouaPPJxKAP_Muew9MQpVWBv0nTPe0SequlZWccZgSmHfMWPGAUH_cL9G6V5-ibyAzyINFNPPB0zjPgqLxmS223Mep4SM2D_6kI046CaksWj3-8TgDbnGFd8vXwp903Qwvx7rZ1tuDKxXiPV74MwoB3w03br-5ypPxtS948oaqEyfIr1ys6LPF5LdvF"/>
+</div>
+</div>
+</section>
+
+<!-- Categories Section (Bento Grid) -->
+<section class="py-xxl px-gutter max-w-container-max mx-auto">
+<div class="flex flex-col items-center mb-xl text-center">
+<h2 class="font-headline-md text-headline-md mb-xs">Shop by Category</h2>
+<div class="w-16 h-1 bg-primary rounded-full"></div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-md">
+    {% for category in categories %}
+    <a class="group relative aspect-square overflow-hidden rounded-xl bg-surface-container-high transition-transform duration-300 hover:shadow-xl" href="{% url 'category_products' category.slug %}">
+    <img alt="{{ category.name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ category.image_url }}"/>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-sm">
+    <span class="text-white font-label-md text-label-md">{{ category.name }}</span>
+    </div>
+    </a>
+    {% empty %}
+    <p class="text-center col-span-full py-md text-on-surface-variant">No categories found. Run python manage.py seed_db to seed database.</p>
+    {% endfor %}
+</div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-xxl bg-surface-container-low">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="flex justify-between items-end mb-xl">
+<div>
+<h2 class="font-headline-md text-headline-md mb-xs">Featured Products</h2>
+<p class="text-on-surface-variant font-body-md">Handpicked essentials for your everyday life.</p>
+</div>
+<a class="text-primary font-label-md hover:underline" href="{% url 'products' %}">View All Products</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+    {% for product in featured_products %}
+    <div class="group product-card bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden relative">
+    {% if product.old_price %}
+    <div class="absolute top-3 left-3 z-10 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Sale</div>
+    {% endif %}
+    <div class="aspect-[4/5] relative overflow-hidden bg-surface-container-high">
+    <img alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="{{ product.image_url }}"/>
+    <div class="product-actions absolute inset-x-0 bottom-4 flex justify-center gap-sm px-sm">
+    <a href="{% url 'add_to_cart' product.id %}" class="flex-grow bg-primary text-white py-2 rounded-lg text-label-sm font-label-sm hover:brightness-95 transition-colors flex items-center justify-center gap-1 font-bold">
+    <span class="material-symbols-outlined text-[18px]">shopping_cart</span> Add to Cart
+    </a>
+    <a href="{% url 'product_details' product.slug %}" class="p-2 bg-white text-primary border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors">
+    <span class="material-symbols-outlined text-[18px]">visibility</span>
+    </a>
+    </div>
+    </div>
+    <div class="p-md text-left">
+    <span class="text-on-surface-variant font-label-sm text-label-sm mb-1 block">{{ product.category.name }}</span>
+    <h3 class="font-headline-sm text-[18px] mb-2 truncate" title="{{ product.name }}"><a href="{% url 'product_details' product.slug %}" class="hover:text-primary">{{ product.name }}</a></h3>
+    <div class="flex items-center gap-1 mb-2 text-[#fbbf24]">
+    <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+    <span class="text-on-surface-variant font-label-sm text-label-sm ml-1">{{ product.rating }} ({{ product.rating_count }})</span>
+    </div>
+    <div class="flex items-baseline gap-2">
+    <span class="text-primary font-bold text-lg">₹{{ product.price }}</span>
+    {% if product.old_price %}
+    <span class="text-on-surface-variant line-through text-sm">₹{{ product.old_price }}</span>
+    {% endif %}
+    </div>
+    </div>
+    </div>
+    {% empty %}
+    <p class="text-center col-span-full py-md text-on-surface-variant">No products found.</p>
+    {% endfor %}
+</div>
+</div>
+</section>
+
+<!-- Special Offer Banner -->
+<section class="py-xl px-gutter max-w-container-max mx-auto">
+<div class="relative w-full h-80 rounded-xxl overflow-hidden flex items-center group">
+<img alt="Summer Sale" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuZVKmnwKm8oArrOKGn0Czba-WB0L0uI4Zjv0soOmSYgMMNzkAC9iFrhRPAvyNkkOVbFe_9950YX3iPO2p0JE4CBAifj8qCY1JDwXsfwlE27l91p2GT8Qcc16XaWjYuMbscX2HRdtwllhDgagS3fSmjBYRKe6Ywatf_J2HEvuedjAbhHTZB9pqI22LVfDlVM5zVdQbeS7V_Vh1nunDWk5WwGAM_7qm2mJiay3lVOJRNR6ZMVtT2yjHqY2rR9obQUBugnwhzHUIRZ6l"/>
+<div class="absolute inset-0 bg-gradient-to-r from-primary/90 to-transparent"></div>
+<div class="relative z-10 p-xl md:p-xxl space-y-md max-w-xl text-white">
+<p class="font-label-md text-label-md tracking-widest uppercase opacity-90">Limited Time Offer</p>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg">Summer Sale 2026</h2>
+<p class="font-headline-sm text-headline-sm">Up to <span class="font-bold text-white text-display-lg-mobile">70% OFF</span> on all categories</p>
+<button class="bg-white text-primary px-lg py-3 rounded-lg font-label-md text-label-md shadow-lg hover:bg-surface-container-low transition-all" onclick="window.location.href='{% url 'products' %}'">Shop Deals Now</button>
+</div>
+</div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-xxl px-gutter max-w-container-max mx-auto border-y border-outline-variant">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-xl">
+<div class="flex items-center gap-md group hover:translate-y-[-4px] transition-transform duration-300">
+<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-white transition-colors">local_shipping</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Free Shipping</h4>
+<p class="text-body-sm text-on-surface-variant">On orders over ₹4,999</p>
+</div>
+</div>
+<div class="flex items-center gap-md group hover:translate-y-[-4px] transition-transform duration-300">
+<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-white transition-colors">verified_user</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Secure Payments</h4>
+<p class="text-body-sm text-on-surface-variant">100% data protection</p>
+</div>
+</div>
+<div class="flex items-center gap-md group hover:translate-y-[-4px] transition-transform duration-300">
+<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-white transition-colors">published_with_changes</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Easy Returns</h4>
+<p class="text-body-sm text-on-surface-variant">30-day return policy</p>
+</div>
+</div>
+<div class="flex items-center gap-md group hover:translate-y-[-4px] transition-transform duration-300">
+<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-white transition-colors">support_agent</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">24/7 Support</h4>
+<p class="text-body-sm text-on-surface-variant">Dedicated assistance</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Trending Products -->
+<section class="py-xxl px-gutter max-w-container-max mx-auto overflow-hidden">
+<div class="flex justify-between items-center mb-xl">
+<h2 class="font-headline-md text-headline-md">Trending Now</h2>
+<div class="flex gap-sm">
+<button class="p-2 border border-outline-variant rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-2 border border-outline-variant rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="flex gap-lg overflow-x-auto pb-md scrollbar-hide">
+    {% for product in trending_products %}
+    <div class="flex-none w-72 group cursor-pointer" onclick="window.location.href='{% url 'product_details' product.slug %}'">
+    <div class="relative rounded-xl overflow-hidden aspect-square mb-md bg-surface-container-high">
+    <img alt="{{ product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" src="{{ product.image_url }}"/>
+    <div class="absolute top-2 right-2 bg-error text-white font-label-sm text-[10px] px-2 py-1 rounded-full uppercase">Trending</div>
+    </div>
+    <h3 class="font-label-md text-label-md mb-1 text-on-surface hover:text-primary transition-colors truncate">{{ product.name }}</h3>
+    <p class="text-primary font-bold">₹{{ product.price }}</p>
+    </div>
+    {% empty %}
+    <p class="text-center w-full py-md text-on-surface-variant">No trending products found.</p>
+    {% endfor %}
+</div>
+</section>
+
+<!-- Customer Reviews -->
+<section class="py-xxl bg-surface-container">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="text-center mb-xl">
+<h2 class="font-headline-md text-headline-md mb-xs">What Our Customers Say</h2>
+<p class="text-on-surface-variant font-body-md">Real experiences from our global community.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<!-- Review Card 1 -->
+<div class="glass-card p-xl rounded-xl shadow-sm space-y-md border border-white/40">
+<div class="flex items-center gap-1 text-[#fbbf24]">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md text-on-surface-variant leading-relaxed">
+                            "Absolutely stunning quality. The attention to detail on the packaging alone speaks volumes about ShopSphere's premium service. Highly recommended!"
+                        </p>
+<div class="flex items-center gap-md">
+<img alt="Sarah Jenkins" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGfpEqCGe-5SkcP6CsyuUmIXfp5XLd0Csb_ht6Jz8RE-BWX3-haU0e0WyxDH5P67zxUDQiH3-hBXLSs6AY-MUPkv8ssfaxdMOJhoKN7JH66ekxxLSRfN8ts0UsQuWOiyV-mAjsgpqYSOFA7V5QXcQ7hWYW2ClyvUivSySekSfN6OJQASUsIFXVfP_n0TORNOqscFu58F3NkiV20ikL_PGGD48jKwHS_2NYFrRolutszuYtloz1xKa9O7yQYQqP2mMKa6mpdemVdqE5"/>
+<div>
+<h5 class="font-label-md text-label-md">Sarah Jenkins</h5>
+<p class="text-label-sm text-on-surface-variant">Verified Buyer</p>
+</div>
+</div>
+</div>
+<!-- Review Card 2 -->
+<div class="glass-card p-xl rounded-xl shadow-sm space-y-md border border-white/40">
+<div class="flex items-center gap-1 text-[#fbbf24]">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md text-on-surface-variant leading-relaxed">
+                            "Customer support was incredibly helpful when I needed to exchange sizes. Smooth process from start to finish. I'll definitely be shopping here again."
+                        </p>
+<div class="flex items-center gap-md">
+<img alt="Mark Lawson" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtA54WCBePuTkIKCUbjWya9tfXTXi5nMnLVC0JASuY_4jZWeAb0iWe_KSksjiow2X2noEO5H3EjF2xVci2D1D7Rjr9y0eqOpb4IMJfvJ1WY047vB7ea9nLlZJVQpzhH9PnCM7mw9FHjtCnDJKINMSOPZy6D91DzxOiAwvSwMp_-MeQwLoIL34rs4TdhYHtl1WMNPr8V8Ied4vSLy9XZXxd6KaCZIU8mtzvaVNVIqhj8WTfzxmmCENkkFSF2hHKEBnG5S7smJzF9-DV"/>
+<div>
+<h5 class="font-label-md text-label-md">Mark Lawson</h5>
+<p class="text-label-sm text-on-surface-variant">Verified Buyer</p>
+</div>
+</div>
+</div>
+<!-- Review Card 3 -->
+<div class="glass-card p-xl rounded-xl shadow-sm space-y-md border border-white/40">
+<div class="flex items-center gap-1 text-[#fbbf24]">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md text-on-surface-variant leading-relaxed">
+                            "Finding products is so easy on this site. The curation is perfect – I don't feel overwhelmed by junk. Fast shipping is the cherry on top!"
+                        </p>
+<div class="flex items-center gap-md">
+<img alt="Elena Vance" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDinnuvozjKBLpyU8NyAuMZXN5ZhI71Cf-F2MdwfXwOBdRdDgO6TFZNxERhADOEkNXrcL0b824w1qm3SCL6AQaNLTykgUO62vYOS5B7A3fkRk4FSMNy53e1HvBai3JD4jUtw3A3-BX_Ou9orF4RXFu34LWpuygkABL4cemlnaMZkCJ4k27ub2gKAn5x6lrDJUnA7GhAD4JOai5PPANbU0lbz2pF-bbtnGt68tKhF3lKaeAVsTYKTCqcWCqfxQMyUD3RAg7lVowZbf4R"/>
+<div>
+<h5 class="font-label-md text-label-md">Elena Vance</h5>
+<p class="text-label-sm text-on-surface-variant">Verified Buyer</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+        // Micro-interaction for Sticky Nav
+        window.onscroll = function() {
+            const header = document.querySelector('header');
+            if (window.pageYOffset > 50) {
+                header.classList.add('shadow-xl', 'bg-white/95', 'backdrop-blur-md');
+                header.classList.remove('shadow-md', 'bg-surface-container-lowest');
+            } else {
+                header.classList.remove('shadow-xl', 'bg-white/95', 'backdrop-blur-md');
+                header.classList.add('shadow-md', 'bg-surface-container-lowest');
+            }
+        };
+
+        // Micro-interaction for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.add('scale-95');
+                setTimeout(() => btn.classList.remove('scale-95'), 150);
+            });
+        });
+    </script>
+{% endblock %}

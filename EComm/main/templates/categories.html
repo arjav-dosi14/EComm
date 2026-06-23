@@ -1,0 +1,644 @@
+{% extends 'base.html' %}
+{% block title %}
+Categories
+{% endblock %}
+{% block extra_css %}
+<style>
+    /* CSS RESET & VARIABLES */
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    :root {
+        /* Design Tokens derived from Style Guidance */
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --surface: #faf8ff;
+        --surface-container: #eaedff;
+        --on-surface: #131b2e;
+        --on-surface-variant: #434655;
+        --outline-variant: #c3c6d7;
+        --white: #ffffff;
+        --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+        --shadow-md: 0 10px 15px -3px rgba(15, 23, 42, 0.1);
+        --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.1);
+        --radius-lg: 0.5rem;
+        --radius-xl: 0.75rem;
+        --radius-full: 9999px;
+        --container-max: 1280px;
+        --gutter: 24px;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--surface);
+        color: var(--on-surface);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-family: 'Manrope', sans-serif;
+        font-weight: 700;
+        line-height: 1.2;
+        color: var(--on-surface);
+    }
+
+    /* TOP NAVIGATION BAR */
+    .top-nav-wrapper {
+        background-color: var(--white);
+        border-bottom: 1px solid var(--outline-variant);
+        box-shadow: var(--shadow-sm);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        width: 100%;
+    }
+
+    .top-nav {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: 0 var(--gutter);
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .brand-logo {
+        font-family: 'Manrope', sans-serif;
+        font-size: 30px;
+        font-weight: 800;
+        color: var(--primary);
+        text-decoration: none;
+        letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 24px;
+        list-style: none;
+    }
+
+    .nav-link {
+        text-decoration: none;
+        color: var(--on-surface-variant);
+        font-weight: 500;
+        font-size: 16px;
+        padding-bottom: 4px;
+        transition: color 0.2s, border-color 0.2s;
+    }
+
+    .nav-link:hover {
+        color: var(--primary);
+    }
+
+    .nav-link.active {
+        color: var(--primary);
+        border-bottom: 2px solid var(--primary);
+        font-weight: 700;
+    }
+
+    .nav-actions {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .icon-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--on-surface);
+        transition: transform 0.1s;
+    }
+
+    .icon-btn:active {
+        transform: scale(0.95);
+    }
+
+    /* HERO SECTION */
+    .hero {
+        padding: 80px 0;
+        text-align: center;
+        background: linear-gradient(180deg, #ffffff 0%, var(--surface-container) 100%);
+    }
+
+    .hero-title {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+
+    .hero-subtitle {
+        font-size: 18px;
+        color: var(--on-surface-variant);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* SHARED SECTION STYLES */
+    .section {
+        max-width: var(--container-max);
+        margin: 64px auto;
+        padding: 0 var(--gutter);
+    }
+
+    .section-header {
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    /* CATEGORY CARDS */
+    .grid-10 {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 24px;
+    }
+
+    .card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        border: 1px solid #e2e8f0;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .card-img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        background-color: #f1f5f9;
+    }
+
+    .card-body {
+        padding: 16px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-title {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+
+    .card-desc {
+        font-size: 14px;
+        color: var(--on-surface-variant);
+        margin-bottom: 16px;
+        flex-grow: 1;
+    }
+
+    .btn-explore {
+        padding: 8px 16px;
+        background-color: var(--white);
+        border: 1px solid #e2e8f0;
+        color: var(--on-surface);
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+        transition: background 0.2s;
+    }
+
+    .btn-explore:hover {
+        background-color: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    /* POPULAR CATEGORIES (Bento-ish) */
+    .grid-popular {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+
+    .popular-card {
+        position: relative;
+        height: 300px;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        color: white;
+        display: flex;
+        align-items: flex-end;
+        text-decoration: none;
+    }
+
+    .popular-card img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+        transition: transform 0.5s ease;
+    }
+
+    .popular-card:hover img {
+        transform: scale(1.05);
+    }
+
+    .popular-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%);
+        z-index: 1;
+    }
+
+    .popular-content {
+        position: relative;
+        z-index: 2;
+        padding: 32px;
+    }
+
+    /* WHY SHOP WITH US */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+    }
+
+    .feature-card {
+        background: var(--white);
+        padding: 32px;
+        text-align: center;
+        border-radius: var(--radius-lg);
+        border: 1px solid #e2e8f0;
+    }
+
+    .feature-icon {
+        font-size: 40px;
+        color: var(--primary);
+        margin-bottom: 16px;
+    }
+
+    /* FEATURED COLLECTIONS */
+    .collections-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+
+    .collection-card {
+        height: 400px;
+        background-size: cover;
+        background-position: center;
+        border-radius: var(--radius-xl);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        padding: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .collection-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .collection-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .btn-primary {
+        display: inline-block;
+        background-color: var(--primary);
+        color: white;
+        padding: 12px 24px;
+        border-radius: var(--radius-lg);
+        text-decoration: none;
+        font-weight: 500;
+        margin-top: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+    }
+
+    /* NEWSLETTER */
+    .newsletter {
+        background-color: var(--primary);
+        color: white;
+        padding: 64px 0;
+        text-align: center;
+    }
+
+    .newsletter-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .newsletter h2 {
+        color: white;
+        margin-bottom: 16px;
+    }
+
+    .newsletter-form {
+        display: flex;
+        gap: 8px;
+        margin-top: 24px;
+    }
+
+    .newsletter-form input {
+        flex-grow: 1;
+        padding: 14px 20px;
+        border-radius: var(--radius-lg);
+        border: none;
+        font-size: 16px;
+    }
+
+    .newsletter-form button {
+        background-color: var(--on-surface);
+        color: white;
+        padding: 0 32px;
+        border-radius: var(--radius-lg);
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    /* FOOTER */
+    .footer-wrapper {
+        background-color: var(--white);
+        border-top: 1px solid var(--outline-variant);
+        padding-top: 64px;
+    }
+
+    .footer-content {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: 0 var(--gutter) 64px var(--gutter);
+        display: grid;
+        grid-template-columns: 1.5fr repeat(3, 1fr);
+        gap: 40px;
+    }
+
+    .footer-brand h3 {
+        margin-bottom: 16px;
+    }
+
+    .footer-links h4 {
+        font-size: 18px;
+        margin-bottom: 24px;
+    }
+
+    .footer-links ul {
+        list-style: none;
+    }
+
+    .footer-links li {
+        margin-bottom: 12px;
+    }
+
+    .footer-links a {
+        text-decoration: none;
+        color: var(--on-secondary-container);
+        transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+        color: var(--primary);
+        text-decoration: underline;
+    }
+
+    .footer-bottom {
+        border-top: 1px solid var(--outline-variant);
+        padding: 24px 0;
+        text-align: center;
+        font-size: 14px;
+        color: var(--on-surface-variant);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+        .grid-10 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .features-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .collections-grid {
+            grid-template-columns: repeat(1, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .grid-10 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-popular {
+            grid-template-columns: 1fr;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .footer-content {
+            grid-template-columns: 1fr;
+        }
+
+        .nav-links {
+            display: none;
+        }
+
+        .hero-title {
+            font-size: 32px;
+        }
+    }
+
+    .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="section">
+        <h1 class="hero-title">Shop by Categories</h1>
+        <p class="hero-subtitle">Explore our wide range of products and discover exactly what you need.</p>
+    </div>
+</section>
+<!-- Popular Categories -->
+<section class="section">
+    <div class="section-header">
+        <h2>Most Popular Categories</h2>
+    </div>
+    <div class="grid-popular">
+        <a class="popular-card" href="{% url 'category_products' 'electronics' %}">
+            <img data-alt="A professional top-down studio shot of various modern gadgets including a sleek laptop, wireless headphones, and a smartphone arranged on a clean white surface. The lighting is crisp and high-key, emphasizing a modern corporate aesthetic with soft shadows and a blue and white color palette."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-XimaHyHCmnjO-CFebngNNJgr_suQAYeCUyv6o1tqteuhoPRjQYMwi-roERcRlmDuPvyCkr91nFf-Bm4ttUBvHBXxcLeua42qXta2DNqcBoh4geiCnvM6jG_r7vJYrlFCQQ5oPPovk-OQubOGkSF8m0iYBBPC_IDaZMdjw1tftqPj7gnJP5NJw41jbsWFkY65lqDfPugoWCmYt_mD9UYMhVTNZhW1yfSCd2lzdbe_BmChafISNl7NDp2cHrN_6LgtSGD1tWJcua4" />
+            <div class="popular-overlay"></div>
+            <div class="popular-content">
+                <h3>Electronics</h3>
+                <p>Next-gen technology for your life</p>
+            </div>
+        </a>
+        <a class="popular-card" href="{% url 'category_products' 'fashion' %}">
+            <img data-alt="High-end fashion photography featuring a minimalist wardrobe rack with premium garments in neutral tones. The scene is bathed in soft, natural daylight, creating a bright and airy mood. The clean lines and professional lighting align with a sophisticated, reliable e-commerce brand identity."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAABNtTC4wXaRpCYrTbHLDOgjt53rOkKx-QG6xw2upGX2dIIFYLuebCveW6t0FAXvnLZvHstVLoHv2Y1rFi1sRqXaoMErSLDdT9ruyq7ef3c6eHrdBN9CRk9M1PndDYh4lZIQhbwdRMab4QgE2YBfar7ZjpamZYJmTNOCCMAP0eBjr-OwwDmxsgyeQmgu9a7pvuQkxXC0Izx4Qdra3JfuCtO00GD3hgCjGI5xmJo-rchF1Hg_DsHCtmIlds1bpmZ1hpEeya7KdNAoU" />
+            <div class="popular-overlay"></div>
+            <div class="popular-content">
+                <h3>Fashion</h3>
+                <p>Trendsetting styles for everyone</p>
+            </div>
+        </a>
+        <a class="popular-card" href="{% url 'category_products' 'home-kitchen' %}">
+            <img data-alt="A modern, minimalist kitchen interior with high-end appliances and pristine white surfaces. Soft light spills through a window, highlighting the clean and organized space. The image evokes a sense of high trust and frictionless living through sophisticated architectural photography."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJJ267TqRkriIum8QVki6rDRhHElPdjCBcsekyQM8snNgQ-cunVdbLrAwAujrIhia8nNCDs1TiG6KOY6v-GQVNG3mU9Zs4qYGq54wiIDFvX7IWnDykyhLR3wEEQ71fqHIQV22C8EQ-tGZ4h1QBqFbvikOLQwBIcv8SnK-7h8MO71aulHSD2Uvf5TV_yon0uKuucp_52bCqS32nMBZ3kR3p-4C8msdu-bNJ1n0TgftsrGkgoVMRLIkgZwJt1wktpYLwJTOLtqInq84" />
+            <div class="popular-overlay"></div>
+            <div class="popular-content">
+                <h3>Home &amp; Kitchen</h3>
+                <p>Elevate your living space</p>
+            </div>
+        </a>
+        <a class="popular-card" href="{% url 'category_products' 'sports' %}">
+            <img data-alt="An artistic shot of a modern, well-lit fitness studio with high-quality gym equipment. The lighting is dramatic yet professional, focusing on the texture of the weights and yoga mats. The color palette is dominated by whites and grays with subtle blue accents, reflecting a corporate modern style."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeGKXrbORHIc1kMoNeFZeHp8Od8MeUsReJ-rgCCrSVbWZREjTTORt2iUNtP2oCU-zcqvb7T_yhTdLxJuZ239SQex3R65xS5nexe3g8zsOvgHwa5tjSST6chFsOK55-xMhdm2s1rIXVjE0SWZnAlEtL7vueYLBEABynfy-nH_9P5bCJIYqd4D1oG_jkzw3bqTykRjkKLWB9R5fekeRn1hYhFMlD-wFOzLs59xRKUvdO-PP_hcqHziR21xUIz5Ft_Dfsp2QH-ZT5650" />
+            <div class="popular-overlay"></div>
+            <div class="popular-content">
+                <h3>Sports &amp; Fitness</h3>
+                <p>Fuel your active lifestyle</p>
+            </div>
+        </a>
+    </div>
+</section>
+<!-- Categories Grid (Dynamic) -->
+<section class="section">
+    <div class="section-header">
+        <h2>Explore All Categories</h2>
+    </div>
+    <div class="grid-10">
+        {% for cat in categories_list %}
+        <div class="card">
+            <img class="card-img" src="{{ cat.image_url }}" alt="{{ cat.name }}" />
+            <div class="card-body">
+                <h3 class="card-title">{{ cat.name }}</h3>
+                <p class="card-desc">{{ cat.description }}</p>
+                <a class="btn-explore" href="{% url 'category_products' cat.slug %}">Explore</a>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center col-span-full py-md text-on-surface-variant">No categories found.</p>
+        {% endfor %}
+    </div>
+</section>
+<!-- Why Shop With Us -->
+<section class="section">
+    <div class="features-grid">
+        <div class="feature-card">
+            <span class="material-symbols-outlined feature-icon">local_shipping</span>
+            <h3>Fast Delivery</h3>
+            <p>Receive your products within 24-48 hours across major cities.</p>
+        </div>
+        <div class="feature-card">
+            <span class="material-symbols-outlined feature-icon">verified_user</span>
+            <h3>Secure Payments</h3>
+            <p>We use 256-bit encryption for all your transactional data.</p>
+        </div>
+        <div class="feature-card">
+            <span class="material-symbols-outlined feature-icon">cached</span>
+            <h3>Easy Returns</h3>
+            <p>Not satisfied? Return it within 30 days, no questions asked.</p>
+        </div>
+        <div class="feature-card">
+            <span class="material-symbols-outlined feature-icon">support_agent</span>
+            <h3>24/7 Support</h3>
+            <p>Our dedicated team is here to help you at any time.</p>
+        </div>
+    </div>
+</section>
+<!-- Featured Collections -->
+<section class="section">
+    <div class="section-header">
+        <h2>Featured Collections</h2>
+    </div>
+    <div class="collections-grid">
+        <div class="collection-card"
+            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBmDtFHMBkC2mj-l4W-ogAXi4zZvRdKGZy9dc75_b1xREjKjMbkZJGvW_Y8ITtyaSCiFgj6C7BYZ-bSGvk8126XD4KgEpY1-lShT7snrI7ZQs4sqGENtQ5xRuGdnSH5NkEie_rc_cYHE098XZrrdKJE5boAOVMcV60DAjZcs6qRzTEQG9cA9l3C6L-yAWIKkZckO0qsAE8LEoVVCs5iI8c2heXQ7bj7_QLCLPdZasR7-oZDektW9vBKKFjN9Y-o2ApihtTeDTF7qJQ')">
+            <div class="collection-content">
+                <h3>Summer Collection</h3>
+                <p>Lightweight and breathable styles.</p>
+                <a class="btn-primary" href="#">Shop Now</a>
+            </div>
+        </div>
+        <div class="collection-card"
+            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB1pBPKV0OKm9Ee71gCLzfCin5Cs5ItY8lRvggdBRkkbxI_lacdIzTkJ85fQgu5a0OJbxraazYvZdqjrBNpJiXoajiRW-kn-RpVHzBNk9Tq-EvA3haUXMBt-qmZZw5tj9UHHblM7SCnELGp6THaG9SyhHPS3X9CSl3aGH7NsB7UifeEd495IJIzKLO6q8k05BxHA-BBKAZjen4YnT3y6RAu8-daiprqoBj71Cks-orXfJdOL2WZfpUZO8TPI6xBhMtzvLW5SajLu6A')">
+            <div class="collection-content">
+                <h3>New Arrivals</h3>
+                <p>Be the first to own the latest trends.</p>
+                <a class="btn-primary" href="#">Explore</a>
+            </div>
+        </div>
+        <div class="collection-card"
+            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCU1qmohYfKfYv8sUsEQ8Ors51lKpOhugx_-P5Sgd_ZuOAbGelkCGJ5nEQ1wgxUVcEdZFUa6cUT0O6LDwIlzYCdn29-9Mdw8J8YHuufNrWtys2mgeRv9osoTDzi--owxTYDOMxYfmAd2gdGOACh2S-3jNn7p9iFvqEcJb8hnCcnAarFUh7nPotkoilogcXZYSZEpqrAdjyFhe_djR_gl6-35rbkvRGx_gxMFz95gni7jjKD9ynN3UdFHIH6DS8CvA_ixXNonuxyTSI')">
+            <div class="collection-content">
+                <h3>Best Sellers</h3>
+                <p>Highly rated by our customers.</p>
+                <a class="btn-primary" href="#">View More</a>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    // Micro-interactions for button ripples/clicks
+    document.querySelectorAll('.btn-explore, .btn-primary, .icon-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            // Future implementation of ripple or feedback
+            console.log('Interaction recorded on', button.textContent.trim());
+        });
+    });
+
+    // Simple smooth scroll for links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+{% endblock %}

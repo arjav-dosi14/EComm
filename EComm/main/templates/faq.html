@@ -1,0 +1,620 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FAQ - ShopSphere Help Center</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#dbe1ff",
+                    "on-surface": "#111c2d",
+                    "secondary": "#5c5f61",
+                    "tertiary-container": "#0f69dc",
+                    "on-secondary-container": "#626567",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#c4c7c9",
+                    "surface-bright": "#f9f9ff",
+                    "inverse-surface": "#263143",
+                    "surface-container": "#e7eeff",
+                    "surface-tint": "#0053db",
+                    "tertiary": "#0051b1",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#00174b",
+                    "on-tertiary-fixed-variant": "#004395",
+                    "surface": "#f9f9ff",
+                    "on-tertiary-fixed": "#001a42",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-primary-container": "#eeefff",
+                    "primary": "#004ac6",
+                    "inverse-primary": "#b4c5ff",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed": "#d8e2ff",
+                    "primary-container": "#2563eb",
+                    "inverse-on-surface": "#ecf1ff",
+                    "on-tertiary-container": "#edf0ff",
+                    "on-secondary-fixed-variant": "#444749",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#adc6ff",
+                    "surface-container-high": "#dee8ff",
+                    "surface-dim": "#cfdaf2",
+                    "on-secondary-fixed": "#191c1e",
+                    "secondary-fixed": "#e0e3e5",
+                    "surface-variant": "#d8e3fb",
+                    "on-error-container": "#93000a",
+                    "secondary-container": "#e0e3e5",
+                    "background": "#f9f9ff",
+                    "on-background": "#111c2d",
+                    "error": "#ba1a1a",
+                    "on-error": "#ffffff",
+                    "outline": "#737686",
+                    "surface-container-highest": "#d8e3fb",
+                    "surface-container-low": "#f0f3ff",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-surface-variant": "#434655",
+                    "outline-variant": "#c3c6d7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "12px",
+                    "lg": "48px",
+                    "base": "8px",
+                    "gutter": "24px",
+                    "md": "24px",
+                    "container-max": "1200px",
+                    "xs": "4px",
+                    "xl": "80px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "display": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "caption": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9ff;
+            color: #111c2d;
+            margin: 0;
+            line-height: 1.5;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        /* TopNavBar Styling from JSON */
+        .top-nav-bar {
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .top-nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+        }
+        .brand-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #004ac6;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+        .nav-link {
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #5c5f61;
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: #004ac6; }
+        .nav-link.active {
+            color: #004ac6;
+            font-weight: 700;
+            border-bottom: 2px solid #004ac6;
+            padding-bottom: 4px;
+        }
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+            background: linear-gradient(to bottom, #ffffff, #f0f3ff);
+        }
+        .hero-title {
+            font-size: 48px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+        .hero-subtitle {
+            font-size: 18px;
+            color: #5c5f61;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 16px 24px 16px 56px;
+            border-radius: 12px;
+            border: 1px solid #c3c6d7;
+            font-size: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #737686;
+        }
+        /* Category Grid */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 24px;
+            margin-top: -40px;
+            padding-bottom: 60px;
+        }
+        .category-card {
+            background: #ffffff;
+            border: 1px solid #e0e3e5;
+            border-radius: 12px;
+            padding: 32px 24px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-color: #2563eb;
+        }
+        .category-icon {
+            font-size: 40px;
+            color: #2563eb;
+            margin-bottom: 16px;
+        }
+        .category-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        /* FAQ List Section */
+        .faq-section {
+            padding: 60px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+        }
+        .faq-group-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #004ac6;
+        }
+        .faq-item {
+            background: #ffffff;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e3e5;
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 20px 24px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .faq-question:hover {
+            background-color: #f0f3ff;
+        }
+        .faq-answer {
+            padding: 0 24px 20px;
+            color: #5c5f61;
+            display: none;
+        }
+        /* Popular Topics */
+        .popular-topics {
+            padding: 60px 0;
+            background-color: #ffffff;
+            border-radius: 24px;
+            margin: 40px auto;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+        }
+        .topic-chip {
+            padding: 16px;
+            background: #f0f3ff;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+            color: #004ac6;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .topic-chip:hover {
+            background: #004ac6;
+            color: #ffffff;
+        }
+        /* Support CTA */
+        .support-cta {
+            background-color: #004ac6;
+            color: #ffffff;
+            padding: 80px 0;
+            text-align: center;
+            border-radius: 24px;
+            margin: 60px 0;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 32px;
+        }
+        .btn {
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background-color: #ffffff;
+            color: #004ac6;
+        }
+        .btn-primary:hover { opacity: 0.9; transform: scale(1.02); }
+        .btn-secondary {
+            background-color: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #ffffff;
+        }
+        .btn-secondary:hover { background-color: rgba(255,255,255,0.2); }
+
+        /* Footer */
+        .footer {
+            background-color: #f0f3ff;
+            padding: 60px 0;
+            margin-top: 80px;
+            border-top: 1px solid #e0e3e5;
+        }
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 48px;
+        }
+        .footer-logo {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .footer-links h4 {
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        .footer-links a {
+            color: #5c5f61;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .footer-links a:hover { color: #004ac6; }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 32px; }
+            .faq-section { grid-template-columns: 1fr; }
+            .footer-content { grid-template-columns: 1fr; text-align: center; }
+            .nav-links { display: none; }
+            .category-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+<!-- TopNavBar -->
+<nav class="top-nav-bar">
+<div class="container top-nav-content">
+<a class="brand-logo flex flex-col items-center justify-center" href="#" style="text-decoration: none;">
+    <img src="{% static 'favicon.png' %}" alt="ShopSphere Icon" style="height: 80px; width: auto;" />
+    <span style="font-family: 'Poppins', 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #004ac6; line-height: 1; margin-top: 4px;">ShopSphere</span>
+</a>
+<div class="nav-links">
+<a class="nav-link" href="{% url 'home' %}">Home</a>
+<a class="nav-link" href="{% url 'products' %}">Shop</a>
+<a class="nav-link" href="{% url 'categories' %}">Categories</a>
+<a class="nav-link active" href="{% url 'faq' %}">FAQ</a>
+<a class="nav-link" href="{% url 'contact' %}">Contact</a>
+</div>
+<div style="display: flex; gap: 16px;">
+<span class="material-symbols-outlined" style="cursor:pointer">shopping_cart</span>
+<span class="material-symbols-outlined" style="cursor:pointer">account_circle</span>
+</div>
+</div>
+</nav>
+<!-- Breadcrumb -->
+<div class="container" style="padding-top: 16px;">
+<nav style="font-size: 14px; color: #737686;">
+<a href="#" style="color: inherit; text-decoration: none;">Home</a>
+<span style="margin: 0 8px;"></span>
+<span style="color: #004ac6; font-weight: 500;">FAQ</span>
+</nav>
+</div>
+<!-- Hero Section -->
+<section class="hero">
+<div class="container">
+<h1 class="hero-title font-headline-lg">Frequently Asked Questions</h1>
+<p class="hero-subtitle font-body-lg">Find answers to the most common questions about orders, shipping, payments, and accounts.</p>
+<div class="search-container">
+<span class="material-symbols-outlined search-icon">search</span>
+<input class="search-input" placeholder="Search FAQs..." type="text"/>
+</div>
+</div>
+</section>
+<div class="container">
+<!-- Category Grid -->
+<div class="category-grid">
+<a class="category-card" href="#orders">
+<span class="material-symbols-outlined category-icon">shopping_bag</span>
+<div class="category-name">Orders</div>
+</a>
+<a class="category-card" href="#shipping">
+<span class="material-symbols-outlined category-icon">local_shipping</span>
+<div class="category-name">Shipping</div>
+</a>
+<a class="category-card" href="#payments">
+<span class="material-symbols-outlined category-icon">payments</span>
+<div class="category-name">Payments</div>
+</a>
+<a class="category-card" href="#returns">
+<span class="material-symbols-outlined category-icon">assignment_return</span>
+<div class="category-name">Returns & Refunds</div>
+</a>
+<a class="category-card" href="#account">
+<span class="material-symbols-outlined category-icon">person</span>
+<div class="category-name">Account</div>
+</a>
+<a class="category-card" href="#support">
+<span class="material-symbols-outlined category-icon">headset_mic</span>
+<div class="category-name">Support</div>
+</a>
+</div>
+<!-- FAQ List Section -->
+<div class="faq-section">
+<div>
+<h3 class="faq-group-title" id="orders"><span class="material-symbols-outlined">shopping_bag</span> Orders</h3>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">
+                        How do I place an order?
+                        <span class="material-symbols-outlined">expand_more</span>
+</div>
+<div class="faq-answer">
+                        To place an order, simply browse our shop, add items to your cart, and proceed to checkout. Follow the prompts to enter your shipping and payment information.
+                    </div>
+</div>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">
+                        Can I cancel an order?
+                        <span class="material-symbols-outlined">expand_more</span>
+</div>
+<div class="faq-answer">
+                        Orders can be canceled within 1 hour of placement. After that, the processing begins. Please contact support immediately if you need to make changes.
+                    </div>
+</div>
+<h3 class="faq-group-title" id="shipping" style="margin-top: 40px;"><span class="material-symbols-outlined">local_shipping</span> Shipping</h3>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">
+                        How long does delivery take?
+                        <span class="material-symbols-outlined">expand_more</span>
+</div>
+<div class="faq-answer">
+                        Standard shipping typically takes 3-5 business days. International shipping can take 7-14 business days depending on your location.
+                    </div>
+</div>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">
+                        Do you offer express shipping?
+                        <span class="material-symbols-outlined">expand_more</span>
+</div>
+<div class="faq-answer">
+                        Yes, we offer next-day and 2-day express shipping for most regions. Options and costs are displayed at checkout.
+                    </div>
+</div>
+</div>
+<div>
+<h3 class="faq-group-title" id="payments"><span class="material-symbols-outlined">payments</span> Payments</h3>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">
+                        What payment methods do you accept?
+                        <span class="material-symbols-outlined">expand_more</span>
+</div>
+<div class="faq-answer">
+                        We accept all major credit cards (Visa, Mastercard, Amex), PayPal, Apple Pay, and Google Pay.
+                    </div>
+</div>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">
+                        Is online payment secure?
+                        <span class="material-symbols-outlined">expand_more</span>
+</div>
+<div class="faq-answer">
+                        Absolutely. We use industry-standard SSL encryption and secure payment gateways to ensure your financial data is always protected.
+                    </div>
+</div>
+<h3 class="faq-group-title" id="returns" style="margin-top: 40px;"><span class="material-symbols-outlined">assignment_return</span> Returns & Refunds</h3>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">
+                        What is your return policy?
+                        <span class="material-symbols-outlined">expand_more</span>
+</div>
+<div class="faq-answer">
+                        We offer a 30-day return policy for unused items in their original packaging. Some exclusions apply for hygiene products.
+                    </div>
+</div>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">
+                        How do refunds work?
+                        <span class="material-symbols-outlined">expand_more</span>
+</div>
+<div class="faq-answer">
+                        Once we receive your return, we will inspect it and process your refund within 5-7 business days to your original payment method.
+                    </div>
+</div>
+</div>
+</div>
+<!-- Popular Topics -->
+<section class="popular-topics">
+<div class="section-header">
+<h2 class="font-headline-md">Popular Topics</h2>
+<p class="font-body-md" style="color: #737686;">Quick access to frequently visited support areas</p>
+</div>
+<div class="topic-grid">
+<div class="topic-chip">Track Order</div>
+<div class="topic-chip">Payment Issues</div>
+<div class="topic-chip">Delivery Status</div>
+<div class="topic-chip">Return Request</div>
+<div class="topic-chip">Account Settings</div>
+<div class="topic-chip">Product Availability</div>
+</div>
+</section>
+<!-- Support CTA -->
+<section class="support-cta" id="support">
+<div class="container">
+<h2 class="font-headline-lg" style="color: white;">Didn't Find Your Answer?</h2>
+<p class="font-body-lg" style="margin-top: 12px; opacity: 0.9;">Our support team is here to help you 24/7 with any inquiries.</p>
+<div class="cta-buttons">
+<a class="btn btn-primary" href="#">Contact Support</a>
+<a class="btn btn-secondary" href="#">Send Message</a>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer -->
+<footer class="footer">
+<div class="container footer-content">
+<div>
+<div class="footer-logo flex flex-col items-start" style="text-decoration: none;">
+    <img src="{% static 'favicon.png' %}" alt="ShopSphere Icon" style="height: 80px; width: auto;" />
+    <span style="font-family: 'Poppins', 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #004ac6; line-height: 1; margin-top: 4px;">ShopSphere</span>
+</div>
+<p style="color: #5c5f61; font-size: 14px; max-width: 300px;">
+                    Your premium destination for modern e-commerce solutions. We provide high-quality products with world-class support.
+                </p>
+<p style="margin-top: 24px; font-size: 12px; color: #737686;">© 2024 ShopSphere. All rights reserved.</p>
+</div>
+<div class="footer-links">
+<h4>Quick Links</h4>
+<ul>
+<li><a href="{% url 'about' %}">About Us</a></li>
+<li><a href="{% url 'contact' %}">Contact</a></li>
+<li><a href="#">Customer Service</a></li>
+</ul>
+</div>
+<div class="footer-links">
+<h4>Legal</h4>
+<ul>
+<li><a href="#">Privacy Policy</a></li>
+<li><a href="#">Terms & Conditions</a></li>
+</ul>
+</div>
+</div>
+</footer>
+<script>
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('.material-symbols-outlined');
+
+            if (answer.style.display === "block") {
+                answer.style.display = "none";
+                icon.textContent = "expand_more";
+                element.style.backgroundColor = "transparent";
+            } else {
+                // Close all others first
+                document.querySelectorAll('.faq-answer').forEach(el => el.style.display = "none");
+                document.querySelectorAll('.faq-question .material-symbols-outlined').forEach(el => el.textContent = "expand_more");
+                document.querySelectorAll('.faq-question').forEach(el => el.style.backgroundColor = "transparent");
+
+                answer.style.display = "block";
+                icon.textContent = "expand_less";
+                element.style.backgroundColor = "#f0f3ff";
+            }
+        }
+    </script>
+</body></html>

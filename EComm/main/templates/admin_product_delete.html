@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Delete {{ product.name }} | ShopSphere Admin{% endblock %}
+
+{% block content %}
+<main class="max-w-md mx-auto px-margin-mobile py-xl sm:py-2xl">
+    <!-- Breadcrumbs -->
+    <nav class="mb-lg flex items-center gap-xs text-on-surface-variant font-label-md">
+        <a class="hover:text-primary" href="{% url 'home' %}">Home</a>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+        <a class="hover:text-primary" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+        <span class="text-on-surface">Delete Product</span>
+    </nav>
+
+    <div class="bg-white border border-outline-variant rounded-2xl p-lg sm:p-xl shadow-sm text-center">
+        <!-- Trash Icon Header -->
+        <div class="bg-red-50 text-error p-md rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-lg">
+            <span class="material-symbols-outlined text-4xl">delete_forever</span>
+        </div>
+
+        <h2 class="text-2xl font-extrabold text-on-surface">Confirm Product Deletion</h2>
+        <p class="text-sm text-on-surface-variant mt-2">Are you sure you want to permanently delete the following product? This action cannot be undone.</p>
+
+        <!-- Product Preview Card -->
+        <div class="my-xl p-md border border-outline-variant/60 rounded-xl bg-surface flex items-center gap-md text-left">
+            <img alt="{{ product.name }}" class="w-16 h-16 rounded object-cover border bg-white" src="{% if product.image %}{{ product.image.url }}{% elif product.image_url %}{{ product.image_url }}{% else %}https://placehold.co/100{% endif %}">
+            <div>
+                <h4 class="font-bold text-on-surface line-clamp-1">{{ product.name }}</h4>
+                <p class="text-xs text-on-surface-variant">Category: {{ product.category.name }}</p>
+                <p class="text-sm font-semibold text-primary mt-0.5">₹{{ product.price }}</p>
+            </div>
+        </div>
+
+        <!-- Deletion Form -->
+        <form method="POST">
+            {% csrf_token %}
+            <div class="flex flex-col sm:flex-row gap-md justify-stretch">
+                <a href="{% url 'admin_dashboard' %}" class="flex-1 border border-outline text-on-surface font-label-md py-3 rounded-lg hover:bg-surface-container-high transition-all text-center">
+                    No, Cancel
+                </a>
+                <button type="submit" class="flex-1 bg-error text-white font-label-md py-3 rounded-lg hover:brightness-90 transition-all active:scale-[0.98] font-bold shadow-md">
+                    Yes, Delete Product
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}

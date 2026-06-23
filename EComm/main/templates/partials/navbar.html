@@ -1,0 +1,133 @@
+{% load static %}
+{% url 'home' as home_url %}
+{% url 'categories' as categories_url %}
+{% url 'about' as about_url %}
+{% url 'products' as products_url %}
+{% url 'contact' as contact_url %}
+<header class="sticky top-0 w-full z-50 bg-surface-container-lowest shadow-md py-3 flex items-center transition-all duration-300">
+<div class="flex justify-between items-center h-full px-gutter max-w-container-max mx-auto w-full">
+
+<div class="flex items-center gap-lg">
+<a class="flex flex-col items-center justify-center"
+href="{% url 'home' %}">
+<img src="{% static 'favicon.png' %}" alt="ShopSphere Icon" class="h-20 w-auto" />
+<span class="text-lg font-extrabold text-primary tracking-tight leading-none mt-1" style="font-family: 'Poppins', 'Montserrat', sans-serif;">ShopSphere</span>
+</a>
+
+<nav class="hidden md:flex gap-md">
+    <a href="{{ home_url }}"
+       class="font-label-md text-label-md
+       {% if request.path == home_url %}
+           text-primary border-b-2 border-primary pb-1
+       {% else %}
+           text-on-secondary-container hover:text-primary transition-colors
+       {% endif %}">
+       New Arrivals
+    </a>
+
+<a href="{{ categories_url }}"
+       class="font-label-md text-label-md
+       {% if request.path == categories_url %}
+           text-primary border-b-2 border-primary pb-1
+       {% else %}
+           text-on-secondary-container hover:text-primary transition-colors
+       {% endif %}">
+       Categories
+    </a>
+
+<a href="{{ about_url }}"
+       class="font-label-md text-label-md
+       {% if request.path == about_url %}
+           text-primary border-b-2 border-primary pb-1
+       {% else %}
+           text-on-secondary-container hover:text-primary transition-colors
+       {% endif %}">
+       About
+    </a>
+
+<a href="{{ products_url }}"
+       class="font-label-md text-label-md
+       {% if request.path == products_url or '/products/' in request.path %}
+           text-primary border-b-2 border-primary pb-1
+       {% else %}
+           text-on-secondary-container hover:text-primary transition-colors
+       {% endif %}">
+       Products
+    </a>
+
+<a href="{{ contact_url }}"
+       class="font-label-md text-label-md
+       {% if request.path == contact_url %}
+           text-primary border-b-2 border-primary pb-1
+       {% else %}
+           text-on-secondary-container hover:text-primary transition-colors
+       {% endif %}">
+       Contact
+    </a>
+</nav>
+</div>
+
+<!-- Search Form -->
+<form action="{% url 'products' %}" method="GET" class="flex-1 max-w-md mx-lg hidden lg:block">
+    <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">
+        search
+        </span>
+        <input
+            name="q"
+            value="{{ query|default:'' }}"
+            class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-primary-container text-body-md font-body-md"
+            placeholder="Search products..."
+            type="text">
+    </div>
+</form>
+
+<!-- Action Buttons -->
+<div class="flex items-center gap-sm">
+    <button class="p-2 rounded-full hover:bg-surface-container-low transition-all duration-200 relative"
+            onclick="window.location.href='{% url 'cart' %}'">
+        <span class="material-symbols-outlined text-primary">
+        shopping_cart
+        </span>
+        {% if cart_count > 0 %}
+            <span class="absolute -top-1 -right-1 bg-[#ba1a1a] text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {{ cart_count }}
+            </span>
+        {% endif %}
+    </button>
+
+    {% if user.is_authenticated %}
+        {% if user.is_staff %}
+            <button class="p-2 rounded-full hover:bg-surface-container-low transition-all duration-200"
+                    onclick="window.location.href='{% url 'admin_dashboard' %}'" title="Admin Dashboard">
+                <span class="material-symbols-outlined text-primary">
+                admin_panel_settings
+                </span>
+            </button>
+        {% endif %}
+        <button class="p-2 rounded-full hover:bg-surface-container-low transition-all duration-200"
+                onclick="window.location.href='{% url 'profile' %}'" title="Profile">
+            <span class="material-symbols-outlined text-primary">
+            person
+            </span>
+        </button>
+        <button class="p-2 rounded-full hover:bg-surface-container-low transition-all duration-200"
+                onclick="window.location.href='{% url 'logout' %}'" title="Logout">
+            <span class="material-symbols-outlined text-primary">
+            logout
+            </span>
+        </button>
+    {% else %}
+        <button class="px-4 py-2 rounded-lg font-label-md text-label-md text-primary hover:bg-surface-container-low transition-all"
+                onclick="window.location.href='{% url 'login' %}'">
+            Login
+        </button>
+        <button class="bg-primary text-white px-4 py-2 rounded-lg font-label-md text-label-md hover:scale-[1.01] active:scale-95 transition-all font-bold"
+                onclick="window.location.href='{% url 'register' %}'">
+            Sign Up
+        </button>
+    {% endif %}
+</div>
+
+</div>
+</header>

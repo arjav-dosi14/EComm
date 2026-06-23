@@ -1,0 +1,465 @@
+{% extends 'base.html' %}
+{% block title %}
+My Profile | ShopSphere
+{% endblock %}
+{% block extra_css %}
+<style>
+        :root {
+            --primary: #004ac6;
+            --primary-container: #2563eb;
+            --on-primary: #ffffff;
+            --surface: #faf8ff;
+            --surface-container-lowest: #ffffff;
+            --surface-container-high: #e2e7ff;
+            --on-surface: #131b2e;
+            --on-surface-variant: #434655;
+            --outline-variant: #c3c6d7;
+            --secondary: #505f76;
+            --tertiary: #f8fafc;
+            --shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+            --radius-lg: 1rem;
+            --radius-md: 0.5rem;
+            --stack-lg: 32px;
+            --stack-md: 16px;
+            --gutter: 24px;
+            --container-max: 1280px;
+        }
+
+        /* Main Layout */
+        .main-wrapper {
+            display: flex;
+            max-width: var(--container-max);
+            margin-left: auto;
+            margin-right: auto;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar mapping from JSON style_shell_layout */
+        .sidebar {
+            width: 260px;
+            padding: var(--stack-lg) var(--gutter);
+            background-color: var(--surface);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-right: 1px solid var(--outline-variant);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--on-surface-variant);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            background-color: rgba(0, 74, 198, 0.08);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item:hover:not(.active) {
+            background-color: var(--surface-container-high);
+        }
+
+        /* Content Area */
+        .content-canvas {
+            flex: 1;
+            padding: var(--stack-lg);
+            background-color: #ffffff;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: var(--secondary);
+            margin-bottom: var(--stack-lg);
+        }
+
+        .breadcrumb span {
+            margin: 0 8px;
+        }
+
+        /* Bento Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        /* Profile Header Card */
+        .profile-header-card {
+            grid-column: span 12;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            background: linear-gradient(135deg, var(--surface-container-high) 0%, #ffffff 100%);
+        }
+
+        .avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #ffffff;
+            box-shadow: var(--shadow);
+        }
+
+        .profile-info h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--on-surface);
+        }
+
+        .badge-premium {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--primary-container);
+            color: #ffffff;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 40px;
+            margin-top: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--on-surface-variant);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Account Details */
+        .account-details {
+            grid-column: span 12;
+        }
+
+        .loyalty-card {
+            grid-column: span 12;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--outline-variant);
+            padding-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media(max-width:768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--on-surface-variant);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .checkout-input {
+            padding: 8px 12px;
+            border: 1px solid var(--outline-variant);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
+            background-color: white;
+        }
+
+        .checkout-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 74, 198, 0.1);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-top: 16px;
+        }
+
+        .progress-bar-bg {
+            height: 10px;
+            background: rgba(0, 74, 198, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 5px;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Quick Actions Grid */
+        .quick-actions {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .action-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+            background: #f8fafc;
+            border: 1px solid var(--outline-variant);
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            color: var(--on-surface);
+            transition: transform 0.2s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            background: var(--surface-container-high);
+        }
+
+        .action-card .material-symbols-outlined {
+            font-size: 32px;
+            color: var(--primary);
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar { display: none; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .profile-header-card { flex-direction: column; text-align: center; }
+        }
+</style>
+{% endblock %}
+{% block content %}
+<div class="main-wrapper">
+<!-- SideNavBar -->
+<aside class="sidebar">
+<a class="nav-item active" href="{% url 'profile' %}">
+<span class="material-symbols-outlined">person</span>
+                My Profile
+</a>
+<a class="nav-item" href="{% url 'history' %}">
+<span class="material-symbols-outlined">shopping_bag</span>
+                Order History
+</a>
+<a class="nav-item" href="{% url 'cart' %}">
+<span class="material-symbols-outlined">shopping_cart</span>
+                Shopping Cart
+</a>
+<div style="margin-top: auto; padding-top: 24px; border-top: 1px solid var(--outline-variant);">
+<a class="nav-item" href="{% url 'contact' %}">
+<span class="material-symbols-outlined">headset_mic</span>
+                    Contact Support
+</a>
+<a class="nav-item text-error" href="{% url 'logout' %}">
+<span class="material-symbols-outlined">logout</span>
+                    Sign Out
+</a>
+</div>
+</aside>
+
+<!-- Main Content -->
+<main class="content-canvas">
+<div class="breadcrumb">
+                <a href="{% url 'home' %}" class="hover:text-primary">Home</a> <span>/</span> My Profile
+</div>
+
+{% if messages %}
+<div class="mb-md">
+    {% for message in messages %}
+    <div class="p-md rounded-lg text-sm font-semibold {% if message.tags == 'success' %}bg-emerald-100 text-emerald-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="dashboard-grid">
+<!-- Profile Header -->
+<section class="card profile-header-card">
+<img alt="{{ user.username }}" class="avatar-large" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXZLvn0rgIwJ_N0Bfm4NS8Rl4qfLZ_UTf_qeGcD6kvYU-nBNd9yAoiA2DT6zPjnBePWz3pF8T1hzU5OaCAPRKqOGPt4rsilUu0JT04CHbDPuCoqE4Q9JkiCg35pu-OXNrf3hDEFO2QbdsmSP2oBJyp2tFFT67KaaTo_T1crX43xafzBdwcWLLNafNhQW-ybc6jxngbZsKh9aW9fISJq9hSjxlhFa2sz9_Oolu9TdyoH2oHoVYEid2xZ0dXC5nJmRP3mgjCHyDoFPGj"/>
+<div class="profile-info">
+<h1>{{ user.first_name|default:user.username }} {{ user.last_name }}</h1>
+<span class="badge-premium">Premium Customer</span>
+<p style="color: var(--secondary); font-size: 14px; margin-top: 8px;">Member since {{ user.date_joined|date:"F Y" }}</p>
+<div class="stats-row">
+<div class="stat-item">
+<span class="stat-value">{{ orders_count }}</span>
+<span class="stat-label">Orders</span>
+</div>
+<div class="stat-item">
+<span class="stat-value">{{ points }}</span>
+<span class="stat-label">Loyalty Points</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Loyalty Progress -->
+<section class="card loyalty-card">
+<div class="section-header">
+<h2 class="section-title">Loyalty Program</h2>
+<span style="font-weight: 600; color: var(--primary);">Silver Level</span>
+</div>
+<p style="font-size: 14px; color: var(--on-surface-variant);">You have accrued <strong class="text-primary">{{ points }} loyalty points</strong>! Keep shopping to level up to Gold Status.</p>
+<div class="progress-container">
+<div class="progress-bar-bg">
+<div class="progress-bar-fill" id="progress-bar" style="width: 0%;"></div>
+</div>
+<div class="progress-text">
+<span>{{ points }} Points</span>
+<span>2000 Points (Gold Status)</span>
+</div>
+</div>
+</section>
+
+<!-- Account Info Form -->
+<section class="card account-details">
+<div class="section-header">
+<h2 class="section-title">Manage Account details & Default Address</h2>
+</div>
+<form method="POST" action="{% url 'profile' %}">
+    {% csrf_token %}
+    <div class="info-grid">
+        <div class="info-group flex flex-col">
+            <label>First Name</label>
+            <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" class="checkout-input w-full" placeholder="Enter first name">
+        </div>
+        <div class="info-group flex flex-col">
+            <label>Last Name</label>
+            <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" class="checkout-input w-full" placeholder="Enter last name">
+        </div>
+        <div class="info-group flex flex-col">
+            <label>Email Address</label>
+            <input type="email" name="email" value="{{ form.email.value|default:'' }}" required class="checkout-input w-full" placeholder="Enter email">
+        </div>
+        <div class="info-group flex flex-col">
+            <label>Phone Number</label>
+            <input type="text" name="phone_number" value="{{ form.phone_number.value|default:'' }}" class="checkout-input w-full" placeholder="Enter phone number">
+        </div>
+        <div class="info-group flex flex-col">
+            <label>Address Line 1</label>
+            <input type="text" name="address_line1" value="{{ form.address_line1.value|default:'' }}" class="checkout-input w-full" placeholder="Street Address, Apt / Box">
+        </div>
+        <div class="info-group flex flex-col">
+            <label>Address Line 2</label>
+            <input type="text" name="address_line2" value="{{ form.address_line2.value|default:'' }}" class="checkout-input w-full" placeholder="Apt, Suite, Unit (optional)">
+        </div>
+        <div class="info-group flex flex-col">
+            <label>City</label>
+            <input type="text" name="city" value="{{ form.city.value|default:'' }}" class="checkout-input w-full" placeholder="City">
+        </div>
+        <div class="info-group flex flex-col">
+            <label>State</label>
+            <input type="text" name="state" value="{{ form.state.value|default:'' }}" class="checkout-input w-full" placeholder="State">
+        </div>
+        <div class="info-group flex flex-col">
+            <label>ZIP Code</label>
+            <input type="text" name="zip_code" value="{{ form.zip_code.value|default:'' }}" class="checkout-input w-full" placeholder="ZIP Code">
+        </div>
+        <div class="info-group flex flex-col">
+            <label>Country</label>
+            <input type="text" name="country" value="{{ form.country.value|default:'India' }}" class="checkout-input w-full" placeholder="Country">
+        </div>
+    </div>
+    <div class="mt-xl text-right">
+        <button type="submit" class="bg-primary text-white px-lg py-3 rounded-lg font-bold hover:bg-primary-container active:scale-[0.98] transition-all">Save Changes</button>
+    </div>
+</form>
+</section>
+
+<!-- Quick Actions -->
+<section class="quick-actions">
+<a class="action-card" href="{% url 'history' %}">
+<span class="material-symbols-outlined">local_shipping</span>
+<span style="font-size: 14px; font-weight: 600;">Track Orders</span>
+</a>
+<a class="action-card" href="{% url 'history' %}">
+<span class="material-symbols-outlined">history</span>
+<span style="font-size: 14px; font-weight: 600;">Order History</span>
+</a>
+<a class="action-card" href="{% url 'cart' %}">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span style="font-size: 14px; font-weight: 600;">View Cart</span>
+</a>
+<a class="action-card" href="{% url 'contact' %}">
+<span class="material-symbols-outlined">help_center</span>
+<span style="font-size: 14px; font-weight: 600;">Help Center</span>
+</a>
+</section>
+</div>
+</main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var points = parseInt("{{ points|default:0 }}") || 0;
+        var percentage = Math.min((points / 2000) * 100, 100);
+        var progressBar = document.getElementById("progress-bar");
+        if (progressBar) {
+            progressBar.style.width = percentage + "%";
+        }
+    });
+</script>
+{% endblock %}

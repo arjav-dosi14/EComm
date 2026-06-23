@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} | ShopSphere Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Premium style hooks to style standard Django inputs */
+    .form-container input[type="text"], 
+    .form-container input[type="number"], 
+    .form-container select, 
+    .form-container textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--outline-variant);
+        border-radius: 0.5rem;
+        background-color: white;
+        font-size: 14px;
+        color: var(--on-surface);
+        outline: none;
+        transition: all 0.2s;
+    }
+    .form-container input[type="text"]:focus, 
+    .form-container input[type="number"]:focus, 
+    .form-container select:focus, 
+    .form-container textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(53, 37, 205, 0.1);
+    }
+    .form-container input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        accent-color: var(--primary);
+    }
+    .form-card {
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="max-w-xl mx-auto px-margin-mobile py-xl sm:py-2xl">
+    <!-- Breadcrumbs -->
+    <nav class="mb-lg flex items-center gap-xs text-on-surface-variant font-label-md">
+        <a class="hover:text-primary" href="{% url 'home' %}">Home</a>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+        <a class="hover:text-primary" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+        <span class="text-on-surface">{{ title }}</span>
+    </nav>
+
+    <div class="bg-white border border-outline-variant rounded-2xl p-lg sm:p-xl form-card">
+        <!-- Form Header -->
+        <div class="mb-xl text-center">
+            <h2 class="text-2xl font-extrabold text-on-surface">{{ title }}</h2>
+            <p class="text-sm text-on-surface-variant mt-1">Provide the details of the product to publish or edit in the catalog.</p>
+        </div>
+
+        <!-- Form Validation Errors -->
+        {% if form.errors %}
+        <div class="mb-lg p-md bg-red-50 border border-red-200 text-error rounded-lg text-sm">
+            <h4 class="font-bold mb-1">Please correct the following errors:</h4>
+            <ul class="list-disc pl-5">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <li><strong>{{ field|capfirst }}:</strong> {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Product Form -->
+        <form method="POST" enctype="multipart/form-data" class="form-container">
+            {% csrf_token %}
+            
+            <div class="flex flex-col gap-md">
+                {% for field in form %}
+                    {% if field.name == 'is_featured' or field.name == 'is_trending' %}
+                        <!-- Special Checkbox Layout -->
+                        <div class="flex items-center gap-sm py-1">
+                            {{ field }}
+                            <div class="flex flex-col">
+                                <label for="{{ field.id_for_label }}" class="font-bold text-sm text-on-surface cursor-pointer">{{ field.label }}</label>
+                                {% if field.help_text %}
+                                <p class="text-xs text-on-surface-variant mt-0.5">{{ field.help_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <!-- Standard input layout -->
+                        <div class="flex flex-col gap-1">
+                            <label for="{{ field.id_for_label }}" class="font-bold text-sm text-on-surface-variant">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <p class="text-xs text-on-surface-variant mt-0.5">{{ field.help_text }}</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Form Actions -->
+            <div class="mt-2xl flex flex-col sm:flex-row justify-end gap-md border-t border-outline-variant pt-lg">
+                <a href="{% url 'admin_dashboard' %}" class="border border-outline text-on-surface font-label-md py-3 px-xl rounded-lg hover:bg-surface-container-high transition-all text-center">
+                    Cancel
+                </a>
+                <button type="submit" class="bg-primary text-white font-label-md py-3 px-xl rounded-lg hover:brightness-95 transition-all active:scale-[0.98] font-bold shadow-md">
+                    {{ title }}
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}

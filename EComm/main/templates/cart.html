@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% block title %}
+Cart
+{% endblock %}
+{% block extra_css %}
+<style>
+        .cart-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+        .summary-card {
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+</style>
+{% endblock %}
+{% block content %}
+<main class="pt-10 pb-xxl max-w-container-max mx-auto px-md md:px-lg">
+<!-- Breadcrumb -->
+<nav class="flex items-center gap-xs text-body-sm font-body-sm text-secondary mb-lg">
+<a class="hover:text-primary transition-colors" href="{% url 'home' %}">Home</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface font-medium">Cart</span>
+</nav>
+
+<!-- Header -->
+<div class="mb-xl">
+<h1 class="text-headline-lg font-headline-lg text-on-surface mb-2">Shopping Cart</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">
+    You have <span class="font-semibold text-on-surface">{{ cart_items|length }} items</span> in your cart
+</p>
+</div>
+
+{% if cart_items %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left: Cart Items -->
+<div class="lg:col-span-8 space-y-md">
+    {% for item in cart_items %}
+    <div class="bg-surface-container-lowest p-md rounded-xl cart-shadow flex flex-col sm:flex-row gap-md items-center sm:items-start group">
+    <div class="w-32 h-32 rounded-lg bg-surface-container-low overflow-hidden flex-shrink-0 flex items-center justify-center">
+    <img alt="{{ item.product.name }}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300" src="{{ item.product.image_url }}"/>
+    </div>
+    <div class="flex-grow flex flex-col md:flex-row justify-between w-full">
+    <div class="mb-4 md:mb-0">
+    <span class="text-label-sm font-label-sm text-primary uppercase tracking-wider">{{ item.product.category.name }}</span>
+    <h3 class="text-headline-sm font-headline-sm text-on-surface">
+        {% if item.product and item.product.slug %}
+        <a href="{% url 'product_details' item.product.slug %}" class="hover:text-primary">{{ item.product.name }}</a>
+        {% else %}
+        <span>{{ item.product.name|default:"Deleted Product" }}</span>
+        {% endif %}
+    </h3>
+    <p class="text-body-sm font-body-sm text-on-surface-variant max-w-md mt-1 truncate">{{ item.product.description }}</p>
+    <div class="mt-4 flex items-center gap-lg">
+    <div class="flex items-center border border-outline-variant rounded-lg overflow-hidden bg-white">
+        <button class="px-3 py-1 hover:bg-surface-container-high transition-colors" onclick="changeQty({{ item.product.id }}, 'decrease')">
+            <span class="material-symbols-outlined text-sm">remove</span>
+        </button>
+        <span class="px-4 py-1 text-label-md font-label-md border-x border-outline-variant" id="qty-{{ item.product.id }}">{{ item.quantity }}</span>
+        <button class="px-3 py-1 hover:bg-surface-container-high transition-colors" onclick="changeQty({{ item.product.id }}, 'increase')">
+            <span class="material-symbols-outlined text-sm">add</span>
+        </button>
+    </div>
+    <a class="text-error flex items-center gap-1 text-label-md font-label-md hover:underline" href="{% url 'remove_from_cart' item.product.id %}">
+        <span class="material-symbols-outlined text-[18px]">delete</span> Remove
+    </a>
+    </div>
+    </div>
+    <div class="text-right">
+    <p class="text-headline-sm font-headline-sm text-primary" id="total-{{ item.product.id }}">₹{{ item.total }}</p>
+    </div>
+    </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Right: Order Summary -->
+<div class="lg:col-span-4 sticky top-28">
+<div class="summary-card p-xl rounded-xl cart-shadow border-outline-variant">
+<h2 class="text-headline-md font-headline-md mb-xl text-on-surface">Order Summary</h2>
+<div class="space-y-md mb-xl border-b border-outline-variant pb-xl">
+<div class="flex justify-between text-body-md font-body-md text-on-surface-variant">
+<span>Subtotal</span>
+<span class="text-on-surface font-medium" id="summary-subtotal">₹{{ subtotal }}</span>
+</div>
+<div class="flex justify-between text-body-md font-body-md text-on-surface-variant">
+<span>Shipping</span>
+<span class="text-on-surface font-medium" id="summary-shipping">₹{{ shipping }}</span>
+</div>
+<div class="flex justify-between text-body-md font-body-md text-on-surface-variant">
+<span>Discount</span>
+<span class="text-error font-medium" id="summary-discount">-₹{{ discount }}</span>
+</div>
+<div class="flex justify-between text-body-md font-body-md text-on-surface-variant">
+<span>Tax (GST 2%)</span>
+<span class="text-on-surface font-medium" id="summary-gst">₹{{ gst }}</span>
+</div>
+</div>
+<div class="flex justify-between items-center mb-xl">
+<span class="text-headline-sm font-headline-sm text-on-surface">Total Amount</span>
+<span class="text-headline-lg font-headline-lg text-primary" id="summary-total">₹{{ total_amount }}</span>
+</div>
+
+<!-- Coupon Form -->
+<form method="POST" action="{% url 'cart' %}" class="mb-xl">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="apply_coupon">
+    <label class="text-label-sm font-label-sm text-on-surface-variant block mb-2">Enter Coupon Code (Try SHOP20)</label>
+    <div class="flex gap-2">
+        <input name="coupon_code" class="flex-grow px-4 py-2 border border-outline-variant rounded-lg focus:ring-primary focus:border-primary bg-white text-body-sm" placeholder="e.g. SHOP20" type="text" value="{{ coupon_code|default:'' }}"/>
+        <button type="submit" class="bg-secondary text-white px-4 py-2 rounded-lg font-label-md hover:bg-secondary-fixed-dim transition-colors">Apply</button>
+    </div>
+</form>
+
+<div class="space-y-md">
+<button class="w-full bg-primary text-white py-4 rounded-xl font-headline-sm hover:opacity-90 transition-all shadow-md active:scale-[0.98]" onclick="window.location.href='{% url 'checkout' %}'">
+                            Proceed to Checkout
+</button>
+<button class="w-full bg-transparent border border-outline text-on-surface py-4 rounded-xl font-headline-sm hover:bg-surface-container transition-colors flex items-center justify-center gap-2" onclick="window.location.href='{% url 'products' %}'">
+<span class="material-symbols-outlined">arrow_back</span>
+                            Continue Shopping
+</button>
+</div>
+<div class="mt-xl pt-xl border-t border-outline-variant flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">verified_user</span>
+<p class="text-label-sm font-label-sm text-secondary">Secure 256-bit SSL encrypted checkout. Your data is protected.</p>
+</div>
+</div>
+</div>
+</div>
+{% else %}
+<!-- Empty Cart State -->
+<section class="py-xxl flex flex-col items-center text-center bg-surface-container-low rounded-3xl border-2 border-dashed border-outline-variant" id="empty-cart-state">
+<div class="w-48 h-48 mb-xl opacity-40 flex items-center justify-center">
+<span class="material-symbols-outlined !text-[120px] text-outline">shopping_cart_off</span>
+</div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface mb-md">Your Cart Is Empty</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-md mb-xl">Looks like you haven't added anything to your cart yet. Explore our latest arrivals and find something you'll love!</p>
+<button onclick="window.location.href='{% url 'products' %}'" class="bg-primary text-white px-xl py-4 rounded-xl font-headline-sm hover:opacity-90 transition-all shadow-lg flex items-center gap-2">
+<span class="material-symbols-outlined">explore</span>
+                Browse Products
+</button>
+</section>
+{% endif %}
+
+<!-- You May Also Like Section -->
+<section class="mt-xxl">
+<h2 class="text-headline-lg font-headline-lg text-on-surface mb-xl">You May Also Like</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+    {% for rec in recommended %}
+    <div class="bg-surface-container-lowest rounded-xl overflow-hidden cart-shadow group border border-outline-variant/30 flex flex-col justify-between">
+    <div class="h-48 overflow-hidden bg-surface-container-low flex items-center justify-center p-xs">
+    <img alt="{{ rec.name }}" class="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-500" src="{{ rec.image_url }}"/>
+    </div>
+    <div class="p-md flex-grow flex flex-col justify-between">
+    <div>
+        <h3 class="text-headline-sm font-headline-sm text-on-surface mb-1 truncate" title="{{ rec.name }}">{{ rec.name }}</h3>
+        <p class="text-primary font-bold text-lg mb-md">₹{{ rec.price }}</p>
+    </div>
+    {% if rec.slug %}
+    <button onclick="window.location.href='{% url 'product_details' rec.slug %}'" class="w-full border border-primary text-primary py-2 rounded-lg font-label-md hover:bg-primary hover:text-white transition-all">View Details</button>
+    {% else %}
+    <button disabled class="w-full border border-outline text-outline py-2 rounded-lg font-label-md cursor-not-allowed">Unavailable</button>
+    {% endif %}
+    </div>
+    </div>
+    {% endfor %}
+</div>
+</section>
+
+<!-- Benefits Section -->
+<section class="mt-xxl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="flex items-center gap-md p-lg bg-surface-container-low rounded-xl border border-outline-variant/50">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary">local_shipping</span>
+</div>
+<div>
+<h4 class="text-headline-sm font-headline-sm text-on-surface">Free Shipping</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">On all orders above ₹4,999</p>
+</div>
+</div>
+<div class="flex items-center gap-md p-lg bg-surface-container-low rounded-xl border border-outline-variant/50">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary">security</span>
+</div>
+<div>
+<h4 class="text-headline-sm font-headline-sm text-on-surface">Secure Payments</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">100% protected transactions</p>
+</div>
+</div>
+<div class="flex items-center gap-md p-lg bg-surface-container-low rounded-xl border border-outline-variant/50">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary">assignment_return</span>
+</div>
+<div>
+<h4 class="text-headline-sm font-headline-sm text-on-surface">Easy Returns</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">30-day hassle-free return policy</p>
+</div>
+</div>
+<div class="flex items-center gap-md p-lg bg-surface-container-low rounded-xl border border-outline-variant/50">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary">support_agent</span>
+</div>
+<div>
+<h4 class="text-headline-sm font-headline-sm text-on-surface">24/7 Support</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Dedicated expert support team</p>
+</div>
+</div>
+</section>
+</main>
+
+<script>
+    function changeQty(productId, action) {
+        const csrfToken = '{{ csrf_token }}';
+        const formData = new FormData();
+        formData.append('product_id', productId);
+        formData.append('action', action);
+        
+        fetch('{% url "update_cart_quantity" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // To keep all parts of UI and django messaging synced, we reload
+                window.location.reload();
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% load static %}
+<footer class="bg-surface-container-high dark:bg-inverse-surface border-t border-outline-variant w-full mt-xxl">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-lg px-gutter py-xl max-w-container-max mx-auto">
+<!-- Brand Column -->
+<div class="space-y-md">
+<a href="{% url 'home' %}" class="flex flex-col items-start inline-flex">
+<img src="{% static 'favicon.png' %}" alt="ShopSphere Icon" class="h-20 w-auto" />
+<span class="text-xl font-extrabold text-primary tracking-tight leading-none mt-2" style="font-family: 'Poppins', 'Montserrat', sans-serif;">ShopSphere</span>
+</a>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">
+                    Premium retail experience delivering excellence across the globe. We believe in quality, sustainability, and unparalleled customer service.
+                </p>
+<div class="flex gap-sm">
+<a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">alternate_email</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</a>
+</div>
+</div>
+<!-- Links Column 1 -->
+<div>
+<h5 class="font-label-md text-label-md text-on-surface mb-lg uppercase tracking-wider">Quick Links</h5>
+<ul class="space-y-sm">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="{% url 'home' %}">New Arrivals</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="{% url 'products' %}">Men's Collection</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="{% url 'products' %}">Women's Collection</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="{% url 'products' %}">Gift Cards</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="{% url 'about' %}">Sustainability</a></li>
+</ul>
+</div>
+<!-- Links Column 2 -->
+<div>
+<h5 class="font-label-md text-label-md text-on-surface mb-lg uppercase tracking-wider">Customer Service</h5>
+<ul class="space-y-sm">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="{% url 'contact' %}">Contact Us</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="{% url 'faq' %}">Shipping &amp; Returns</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="{% url 'profile' %}">Order Tracking</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="{% url 'faq' %}">Size Guide</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="{% url 'faq' %}">FAQs</a></li>
+</ul>
+</div>
+<!-- Links Column 3 -->
+<div>
+<h5 class="font-label-md text-label-md text-on-surface mb-lg uppercase tracking-wider">Legal</h5>
+<ul class="space-y-sm">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="#">Privacy Policy</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="#">Terms of Service</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="#">Cookie Policy</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="#">Returns Policy</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 py-lg px-gutter max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2026 ShopSphere. All rights reserved. Premium Retail Experience.</p>
+<div class="flex gap-md opacity-60">
+<span class="material-symbols-outlined text-[24px]">payments</span>
+<span class="material-symbols-outlined text-[24px]">credit_card</span>
+<span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+</div>
+</div>
+</footer>

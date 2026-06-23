@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard | ShopSphere{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tab-btn.active {
+        border-color: var(--primary);
+        color: var(--primary);
+        font-weight: 700;
+    }
+    .status-pill {
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        border: 1px solid currentColor;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="max-w-container-max mx-auto px-margin-desktop py-xl">
+    <!-- Breadcrumbs -->
+    <nav class="mb-lg flex items-center gap-xs text-on-surface-variant font-label-md">
+        <a class="hover:text-primary" href="{% url 'home' %}">Home</a>
+        <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+        <span class="text-on-surface">Admin Dashboard</span>
+    </nav>
+
+    <!-- Welcome / Page Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md mb-xl">
+        <div>
+            <h2 class="text-3xl font-extrabold text-on-surface">Store Admin Dashboard</h2>
+            <p class="font-body-md text-on-surface-variant mt-1">Manage product inventory, categories, and fulfill orders.</p>
+        </div>
+        <a href="{% url 'admin_product_add' %}" class="bg-primary text-white font-label-md py-sm px-xl rounded-lg hover:brightness-90 transition-all active:scale-[0.98] flex items-center gap-2 font-bold shadow-md">
+            <span class="material-symbols-outlined">add_box</span>
+            Add New Product
+        </a>
+    </div>
+
+    <!-- Message Alerts -->
+    {% if messages %}
+    <div class="mb-lg">
+        {% for message in messages %}
+        <div class="p-md rounded-lg text-sm font-semibold {% if message.tags == 'success' %}bg-emerald-100 text-emerald-800{% else %}bg-blue-100 text-blue-800{% endif %} shadow-sm">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Stats Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-xl">
+        <div class="bg-white border border-outline-variant p-lg rounded-xl shadow-sm flex items-center gap-lg">
+            <div class="bg-emerald-100 p-md rounded-full text-emerald-600">
+                <span class="material-symbols-outlined text-3xl">payments</span>
+            </div>
+            <div>
+                <span class="font-label-md text-on-surface-variant text-xs uppercase font-semibold">Total Revenue (Delivered)</span>
+                <h3 class="text-3xl font-extrabold text-on-surface mt-1">₹{{ total_sales|default:"0.00" }}</h3>
+            </div>
+        </div>
+        <div class="bg-white border border-outline-variant p-lg rounded-xl shadow-sm flex items-center gap-lg">
+            <div class="bg-amber-100 p-md rounded-full text-amber-600">
+                <span class="material-symbols-outlined text-3xl">pending_actions</span>
+            </div>
+            <div>
+                <span class="font-label-md text-on-surface-variant text-xs uppercase font-semibold">Pending Orders</span>
+                <h3 class="text-3xl font-extrabold text-on-surface mt-1">{{ pending_orders }}</h3>
+            </div>
+        </div>
+        <div class="bg-white border border-outline-variant p-lg rounded-xl shadow-sm flex items-center gap-lg">
+            <div class="bg-indigo-100 p-md rounded-full text-indigo-600">
+                <span class="material-symbols-outlined text-3xl">inventory_2</span>
+            </div>
+            <div>
+                <span class="font-label-md text-on-surface-variant text-xs uppercase font-semibold">Total Products</span>
+                <h3 class="text-3xl font-extrabold text-on-surface mt-1">{{ total_products }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs Container -->
+    <div class="bg-white border border-outline-variant rounded-xl shadow-sm overflow-hidden mb-2xl">
+        <!-- Tab Headers -->
+        <div class="flex border-b border-outline-variant bg-surface-container-low px-lg">
+            <button id="products-tab-btn" class="tab-btn active border-b-2 border-transparent py-md px-lg text-sm font-semibold text-on-surface-variant hover:text-primary transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined">inventory</span>
+                Products Inventory ({{ total_products }})
+            </button>
+            <button id="orders-tab-btn" class="tab-btn border-b-2 border-transparent py-md px-lg text-sm font-semibold text-on-surface-variant hover:text-primary transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined">shopping_basket</span>
+                Orders Placed ({{ orders.count }})
+            </button>
+        </div>
+
+        <!-- Tab Contents -->
+        <!-- Products Tab -->
+        <div id="products-tab-content" class="p-lg">
+            <div class="flex justify-between items-center mb-md gap-md flex-wrap">
+                <div class="relative w-full sm:w-80">
+                    <input id="product-search" class="w-full border border-outline-variant rounded-lg px-xl py-sm pl-10 focus:border-primary focus:ring-1 focus:ring-primary/10" placeholder="Search products..." type="text"/>
+                    <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                </div>
+                <div class="text-sm text-on-surface-variant">
+                    Showing all items in inventory
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-outline-variant text-xs uppercase text-on-surface-variant font-bold">
+                            <th class="py-sm px-md">Product</th>
+                            <th class="py-sm px-md">Category</th>
+                            <th class="py-sm px-md">Price</th>
+                            <th class="py-sm px-md">Stock Status</th>
+                            <th class="py-sm px-md text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body">
+                        {% for product in products %}
+                        <tr class="product-row border-b border-outline-variant/50 hover:bg-surface-container-low/50 transition-colors text-sm">
+                            <td class="py-md px-md flex items-center gap-md">
+                                <img alt="{{ product.name }}" class="w-12 h-12 rounded object-cover border bg-white" src="{% if product.image %}{{ product.image.url }}{% elif product.image_url %}{{ product.image_url }}{% else %}https://placehold.co/100{% endif %}">
+                                <div>
+                                    <div class="font-bold text-on-surface line-clamp-1 hover:text-primary">
+                                        {% if product.slug %}
+                                        <a href="{% url 'product_details' product.slug %}">{{ product.name }}</a>
+                                        {% else %}
+                                        <span>{{ product.name }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-xs text-on-surface-variant">ID: {{ product.id }}</div>
+                                </div>
+                            </td>
+                            <td class="py-md px-md text-on-surface-variant">
+                                {{ product.category.name }}
+                            </td>
+                            <td class="py-md px-md font-semibold">
+                                ₹{{ product.price }}
+                                {% if product.old_price %}
+                                <span class="text-xs text-error line-through ml-1">₹{{ product.old_price }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-md px-md">
+                                {% if product.stock > 5 %}
+                                <span class="text-emerald-600 font-semibold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-600"></span>{{ product.stock }} In Stock</span>
+                                {% elif product.stock > 0 %}
+                                <span class="text-amber-600 font-semibold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-600"></span>Only {{ product.stock }} Left</span>
+                                {% else %}
+                                <span class="text-error font-semibold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-error"></span>Out of Stock</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-md px-md text-right">
+                                <div class="flex justify-end gap-md">
+                                    <a href="{% url 'admin_product_edit' product.pk %}" class="text-primary hover:text-primary-container p-1 rounded hover:bg-primary/5 transition-all flex items-center" title="Edit">
+                                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                                    </a>
+                                    <a href="{% url 'admin_product_delete' product.pk %}" class="text-error hover:text-red-700 p-1 rounded hover:bg-error/5 transition-all flex items-center" title="Delete">
+                                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="py-xl text-center text-on-surface-variant font-medium">No products found in database. Click "Add New Product" to populate the catalog.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Orders Tab -->
+        <div id="orders-tab-content" class="p-lg hidden">
+            <div class="flex justify-between items-center mb-md gap-md flex-wrap">
+                <div class="relative w-full sm:w-80">
+                    <input id="order-search" class="w-full border border-outline-variant rounded-lg px-xl py-sm pl-10 focus:border-primary focus:ring-1 focus:ring-primary/10" placeholder="Search by Order ID or Client Name..." type="text"/>
+                    <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                </div>
+                <div class="text-sm text-on-surface-variant">
+                    Showing all orders
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-outline-variant text-xs uppercase text-on-surface-variant font-bold">
+                            <th class="py-sm px-md">Order ID</th>
+                            <th class="py-sm px-md">Customer</th>
+                            <th class="py-sm px-md">Date</th>
+                            <th class="py-sm px-md">Total Amount</th>
+                            <th class="py-sm px-md">Order Items</th>
+                            <th class="py-sm px-md">Status</th>
+                            <th class="py-sm px-md text-right">Update Delivery</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body">
+                        {% for order in orders %}
+                        <tr class="order-row border-b border-outline-variant/50 hover:bg-surface-container-low/50 transition-colors text-sm">
+                            <td class="py-md px-md font-bold text-on-surface">
+                                #{{ order.id }}
+                            </td>
+                            <td class="py-md px-md">
+                                <div class="font-semibold text-on-surface">{{ order.full_name }}</div>
+                                <div class="text-xs text-on-surface-variant">{{ order.email }} | {{ order.phone }}</div>
+                            </td>
+                            <td class="py-md px-md text-on-surface-variant">
+                                {{ order.created_at|date:"M d, Y H:i" }}
+                            </td>
+                            <td class="py-md px-md font-bold text-primary">
+                                ₹{{ order.total_amount }}
+                            </td>
+                            <td class="py-md px-md text-on-surface-variant max-w-xs">
+                                <div class="truncate" title="{% for item in order.items.all %}{{ item.quantity }}x {% if item.product %}{{ item.product.name }}{% else %}Deleted Product{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                                    {% for item in order.items.all %}
+                                    <span class="inline-block bg-surface-container-high px-2 py-0.5 rounded text-xs text-on-surface mr-1 mb-1">{{ item.quantity }}x {% if item.product %}{{ item.product.name }}{% else %}Deleted Product{% endif %}</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="py-md px-md">
+                                {% if order.status == 'Delivered' %}
+                                <span class="status-pill text-[#22c55e] bg-[#22c55e]/10">Delivered</span>
+                                {% elif order.status == 'Processing' %}
+                                <span class="status-pill text-[#f59e0b] bg-[#f59e0b]/10">Processing</span>
+                                {% elif order.status == 'Shipped' %}
+                                <span class="status-pill text-[#3b82f6] bg-[#3b82f6]/10">Shipped</span>
+                                {% else %}
+                                <span class="status-pill text-[#ef4444] bg-[#ef4444]/10">Cancelled</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-md px-md text-right">
+                                <form method="POST" action="{% url 'admin_order_status_update' order.pk %}" class="flex items-center justify-end gap-sm">
+                                    {% csrf_token %}
+                                    <select name="status" class="border border-outline-variant rounded px-2 py-1 text-xs bg-white focus:outline-none focus:border-primary">
+                                        <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                                        <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                        <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                        <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                    </select>
+                                    <button type="submit" class="bg-primary hover:brightness-95 text-white font-bold py-1 px-3 rounded text-xs transition-all active:scale-[0.97]">
+                                        Update
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="py-xl text-center text-on-surface-variant font-medium">No orders found in the database. Customer checkouts will display here.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const prodTabBtn = document.getElementById('products-tab-btn');
+        const orderTabBtn = document.getElementById('orders-tab-btn');
+        const prodContent = document.getElementById('products-tab-content');
+        const orderContent = document.getElementById('orders-tab-content');
+
+        // Tab switches
+        prodTabBtn.addEventListener('click', () => {
+            prodTabBtn.classList.add('active');
+            orderTabBtn.classList.remove('active');
+            prodContent.classList.remove('hidden');
+            orderContent.classList.add('hidden');
+        });
+
+        orderTabBtn.addEventListener('click', () => {
+            orderTabBtn.classList.add('active');
+            prodTabBtn.classList.remove('active');
+            orderContent.classList.remove('hidden');
+            prodContent.classList.add('hidden');
+        });
+
+        // client-side search for products table
+        const prodSearch = document.getElementById('product-search');
+        const productRows = document.querySelectorAll('.product-row');
+        prodSearch.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            productRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if(text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // client-side search for orders table
+        const orderSearch = document.getElementById('order-search');
+        const orderRows = document.querySelectorAll('.order-row');
+        orderSearch.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            orderRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if(text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
